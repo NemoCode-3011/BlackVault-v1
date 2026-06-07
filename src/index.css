@@ -1,0 +1,32 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=Syne:wght@400;600;700&display=swap');
+
+@theme {
+  --color-bg: #0E0C0A;
+  --color-surface: #1A1714;
+  --color-text-primary: #E8E0D0;
+  --color-text-secondary: #8A8070;
+  --color-accent: #C0392B;
+  --color-highlight: #D4A843;
+  --color-border: #3D3B2F;
+
+  --font-display: 'Special Elite', cursive;
+  --font-body: 'Syne', sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  color: var(--color-text-primary);
+}
