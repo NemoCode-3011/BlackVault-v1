@@ -25,13 +25,13 @@ function GlitchLetter({ targetLetter, delay }: { targetLetter: string; delay: nu
       }
       setDisplay(getRandomChar())
       iterations++
-    }, 60)
+    }, 25)
 
     const timeout = setTimeout(() => {
       clearInterval(interval)
       setDisplay(targetLetter)
       setResolved(true)
-    }, delay + maxIterations * 60)
+    }, delay + maxIterations * 25)
 
     return () => {
       clearInterval(interval)
@@ -40,14 +40,7 @@ function GlitchLetter({ targetLetter, delay }: { targetLetter: string; delay: nu
   }, [targetLetter, delay])
 
   return (
-    <span
-      style={{
-        color: resolved ? '#E8E0D0' : '#C0392B',
-        transition: 'color 0.3s ease',
-        display: 'inline-block',
-        minWidth: '0.6em',
-      }}
-    >
+    <span className={`inline-block min-w-[0.6em] transition-colors duration-300 ${resolved ? 'text-bv-ash' : 'text-bv-blood'}`}>
       {display}
     </span>
   )
@@ -62,43 +55,15 @@ export default function Entrance() {
     const timeout = setTimeout(() => {
       setShowButton(true)
     }, word.length * 150 + 400)
-
     return () => clearTimeout(timeout)
   }, [])
 
   return (
-    <div
-      style={{
-        backgroundColor: '#0E0C0A',
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: '2.5rem',
-      }}
-    >
-      {/* overlay */}
-      <div
-        style={{
-          position: 'fixed',
-          inset: 0,
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E")`,
-          pointerEvents: 'none',
-          zIndex: 10,
-          opacity: 0.4,
-        }}
-      />
+    <div className="min-h-screen bg-bv-void flex flex-col items-center justify-center gap-10">
 
-      {/* glitch text */}
-      <h1
-        style={{
-          fontFamily: "'Special Elite', cursive",
-          fontSize: 'clamp(2.5rem, 8vw, 6rem)',
-          letterSpacing: '0.2em',
-          userSelect: 'none',
-        }}
-      >
+      {/* BLACKVAULT glitch text */}
+      <h1 className="text-[clamp(2.5rem,8vw,6rem)] tracking-[0.2em] select-none"
+        style={{ fontFamily: 'var(--font-display)' }}>
         {word.split('').map((letter, index) => (
           <GlitchLetter
             key={index}
@@ -107,11 +72,26 @@ export default function Entrance() {
           />
         ))}
       </h1>
+      <AnimatePresence>
+        {showButton && (
+          <motion.p
+            key="tagline"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 2, delay: 0.5 }}
+            className="text-bv-fog text-[0.7rem] tracking-[0.6em] uppercase"
+            style={{ fontFamily: 'var(--font-display)' }}
+          >
+            The game plays you.
+          </motion.p>
+        )}
+      </AnimatePresence>
 
       {/* Enter button */}
       <AnimatePresence>
         {showButton && (
           <motion.button
+            key="enter"
             initial={{ opacity: 0 }}
             animate={{ opacity: [0, 1, 0.4, 1] }}
             transition={{
@@ -120,31 +100,13 @@ export default function Entrance() {
               repeatType: 'mirror',
             }}
             onClick={() => navigate('/signup')}
-            style={{
-              background: 'transparent',
-              border: '1px solid #3D3B2F',
-              color: '#E8E0D0',
-              fontFamily: "'Syne', sans-serif",
-              fontSize: '0.85rem',
-              letterSpacing: '0.4em',
-              padding: '0.75rem 2.5rem',
-              cursor: 'pointer',
-              textTransform: 'uppercase',
-              transition: 'border-color 0.3s ease, color 0.3s ease',
-            }}
-            onMouseEnter={e => {
-              (e.target as HTMLButtonElement).style.borderColor = '#D4A843'
-                ; (e.target as HTMLButtonElement).style.color = '#D4A843'
-            }}
-            onMouseLeave={e => {
-              (e.target as HTMLButtonElement).style.borderColor = '#3D3B2F'
-                ; (e.target as HTMLButtonElement).style.color = '#E8E0D0'
-            }}
+            className="border border-bv-dust text-bv-ash font-body text-[0.85rem] tracking-[0.4em] uppercase px-10 py-3 bg-transparent cursor-pointer hover:border-bv-gold hover:text-bv-gold transition-colors duration-300"
           >
             Enter
           </motion.button>
         )}
       </AnimatePresence>
+
     </div>
   )
 }
