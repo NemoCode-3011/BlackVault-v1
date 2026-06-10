@@ -125,7 +125,7 @@ export default function RoleReveal() {
               </p>
             </div>
 
-            {/* Solo toggle */}
+            {/* Solo levelling (ahah) */}
             <div
               onClick={() => setIsSolo(!isSolo)}
               className="flex items-center gap-3 cursor-pointer group"

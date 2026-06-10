@@ -21,6 +21,10 @@ h1, h2, h3 {
   font-family: var(--font-display);
 }
 
+p, span{
+   font-family: var(--font-body);
+}
+
 body {
   background-color: #0E0C0A;
   margin: 0;
