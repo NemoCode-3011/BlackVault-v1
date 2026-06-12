@@ -21,7 +21,7 @@ export default function SignIn() {
     setLoading(true)
     setTimeout(() => {
       setLoading(false)
-      navigate('/dashboard')
+      navigate('/archive')
     }, 2000)
   }
 
@@ -98,7 +98,7 @@ export default function SignIn() {
         <p className="text-center text-bv-fog text-xs">
           No clearance yet?{' '}
           <span
-            onClick={() => navigate('/signup')}
+            onClick={() => navigate('/archive')}
             className="text-bv-gold cursor-pointer hover:underline">
             Request Access
           </span>

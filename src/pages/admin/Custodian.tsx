@@ -1,8 +1,10 @@
 import { useState } from 'react'
-import { LayoutDashboard, FolderLock, Mail, Users, Settings, ChevronLeft, ChevronRight, Activity } from 'lucide-react'
+import { LayoutDashboard, FolderLock, Mail, Users, Settings, ChevronLeft, ChevronRight} from 'lucide-react'
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
 import { motion } from 'framer-motion'
 import { Trash2 } from 'lucide-react';
+import bvLogo from '../../assets/bv-logo.png'
+
 const navItems = [
   { icon: LayoutDashboard, label: 'Overview' },
   { icon: FolderLock, label: 'Files' },
@@ -75,10 +77,10 @@ export default function Custodian() {
       {/* Sidebar */}
       <div className={`relative flex flex-col h-auto border-r border-bv-dust bg-bv-vault transition-all duration-300 ${collapsed ? 'w-16' : 'w-56'}`}>
         {/* Logo */}
-        <div className="flex items-center gap-3 px-4 py-6 border-b border-bv-dust">
-          <Activity size={18} className="text-bv-blood shrink-0" />
+        <div className="flex items-center gap-3 px-4 py-6 border-b border-bv-dust relative">
+          <img src={bvLogo} alt="" className= "w-10 h-10 object-contain" />
           {!collapsed && (
-            <p className="text-bv-ash text-xs tracking-[0.3em] uppercase whitespace-nowrap">
+            <p className="text-bv-ash text-xs tracking-[0.3em] uppercase whitespace-nowrap" style={{ fontFamily: 'var(--font-body)'}}>
               BlackVault
             </p>
           )}

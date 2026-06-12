@@ -8,21 +8,21 @@
   --color-bv-blood: #C0392B;
   --color-bv-gold: #D4A843;
   --color-bv-dust: #3D3B2F;
+  --color-bv-paper: #D8CEB8;
+  --color-bv-paper-dark: #C8B89A;
+  --color-bv-stamp: #7A1616;
+  --color-bv-olive: #556B57;
 
   --font-display: 'Special Elite', cursive;
   --font-body: 'Syne', sans-serif;
 }
 
-/* * {
-  font-family: var(--font-body);
-} */
-
-h1, h2, h3 {
+h1,h2,h3 {
   font-family: var(--font-display);
 }
 
-p, span{
-   font-family: var(--font-body);
+p {
+  font-family: var(--font-body);
 }
 
 body {

@@ -60,10 +60,8 @@ export default function Entrance() {
 
   return (
     <div className="min-h-screen bg-bv-void flex flex-col items-center justify-center gap-10">
-
       {/* BLACKVAULT glitch text */}
-      <h1 className="text-[clamp(2.5rem,8vw,6rem)] tracking-[0.2em] select-none"
-        style={{ fontFamily: 'var(--font-display)' }}>
+      <h1 className="text-[clamp(2.5rem,8vw,6rem)] tracking-[0.2em] select-none " style={{ fontFamily: 'var(--font-display), Special Elite ' }}>
         {word.split('').map((letter, index) => (
           <GlitchLetter
             key={index}
@@ -80,8 +78,7 @@ export default function Entrance() {
             animate={{ opacity: 1 }}
             transition={{ duration: 2, delay: 0.5 }}
             className="text-bv-fog text-[0.7rem] tracking-[0.6em] uppercase"
-            style={{ fontFamily: 'var(--font-display)' }}
-          >
+            style={{ fontFamily: 'var(--font-display)' }}>
             The game plays you.
           </motion.p>
         )}
