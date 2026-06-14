@@ -15,17 +15,40 @@
 
   --font-display: 'Special Elite', cursive;
   --font-body: 'Syne', sans-serif;
+  --font-hand: 'Caveat', cursive;
 }
 
-h1,h2,h3 {
+h1,
+h2,
+h3 {
   font-family: var(--font-display);
 }
 
-p {
-  font-family: var(--font-body);
-}
 
 body {
   background-color: #0E0C0A;
   margin: 0;
+}
+
+/* Document viewer scrollbar — thin and dark */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1A1714;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3D3B2F;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #8A8070;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #3D3B2F #1A1714;
 }
