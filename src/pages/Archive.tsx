@@ -138,6 +138,7 @@ function FileViewer({
             <p style={{ color: '#7A1616', fontSize: '0.65rem', letterSpacing: '0.4em', fontFamily: 'var(--font-body)' }}>
               Classified — Authorized Eyes Only
             </p>
+
             <h2 className="text-2xl tracking-widest" style={{ color: '#1A1714', fontFamily: 'var(--font-display)' }}>
               {fileId === '000' ? 'A Letter' : `File ${fileId}`}
             </h2>
@@ -187,6 +188,18 @@ function FileViewer({
           {/* FILE 001 */}
           {fileId === '001' && (
             <div className="flex flex-col gap-5">
+              {/* MOTH_33 annotation — top of document */}
+              <p style={{
+                fontFamily: 'var(--font-hand)',
+                fontSize: '0.82rem',
+                color: '#7A1616',
+                fontStyle: 'italic',
+                opacity: 0.75,
+                marginBottom: '12px',
+                transform: 'rotate(-0.5deg)',
+              }}>
+                this is what I found. — M
+              </p>
               {/* Letterhead */}
               <div className="flex flex-col gap-2 border-b border-black/15 pb-4">
                 <p style={{ color: '#7A1616', fontSize: '0.55rem', letterSpacing: '0.5em', fontFamily: 'var(--font-body)', textTransform: 'uppercase' }}>
@@ -244,226 +257,548 @@ function FileViewer({
                 }}>
                   Found in subject's personal belongings
                 </p>
-            </div>
+              </div>
 
               {/* Form title + case number */}
-          <div className="flex items-start justify-between">
-            <div className="flex flex-col gap-1">
-              <p style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', color: '#1A1714', letterSpacing: '0.08em' }}>
-                Subject Intake Assessment
-              </p>
-              <p style={{ fontSize: '0.6rem', color: '#8A8070', fontFamily: 'var(--font-body)', letterSpacing: '0.2em', textTransform: 'uppercase' }}>
-                Form HF-7 · Restricted
-              </p>
+              <div className="flex items-start justify-between">
+                <div className="flex flex-col gap-1">
+                  <p style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', color: '#1A1714', letterSpacing: '0.08em' }}>
+                    Subject Intake Assessment
+                  </p>
+                  <p style={{ fontSize: '0.6rem', color: '#8A8070', fontFamily: 'var(--font-body)', letterSpacing: '0.2em', textTransform: 'uppercase' }}>
+                    Form HF-7 · Restricted
+                  </p>
+                </div>
+                <div className="flex flex-col items-end gap-1">
+                  <p style={{ fontSize: '0.55rem', color: '#8A8070', fontFamily: 'var(--font-body)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
+                    Case No.
+                  </p>
+                  <p style={{ fontFamily: 'var(--font-display)', fontSize: '0.85rem', color: '#7A1616', letterSpacing: '0.1em' }}>
+                    KVL-007-1963-Ω
+                  </p>
+                </div>
+              </div>
+
+              {/* Form fields */}
+              <div className="flex flex-col gap-3">
+                {/* Row */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex flex-col gap-1">
+                    <p style={{ fontSize: '0.55rem', color: '#8A8070', letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'var(--font-body)' }}>
+                      Date of Intake
+                    </p>
+                    <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.95rem', color: '#2A2520', borderBottom: '1px solid rgba(0,0,0,0.15)', paddingBottom: '2px' }}>
+                      3 March 1963
+                    </p>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <p style={{ fontSize: '0.55rem', color: '#8A8070', letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'var(--font-body)' }}>
+                      Station Officer
+                    </p>
+                    <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.95rem', color: '#2A2520', borderBottom: '1px solid rgba(0,0,0,0.15)', paddingBottom: '2px' }}>
+                      ████████
+                    </p>
+                  </div>
+                </div>
+
+                {/* Row */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex flex-col gap-1">
+                    <p style={{ fontSize: '0.55rem', color: '#8A8070', letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'var(--font-body)' }}>
+                      Subject Name
+                    </p>
+                    <div style={{ height: '22px', background: '#2A2520', borderRadius: '1px', width: '100%' }} />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <p style={{ fontSize: '0.55rem', color: '#8A8070', letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'var(--font-body)' }}>
+                      Nationality
+                    </p>
+                    <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.95rem', color: '#2A2520', borderBottom: '1px solid rgba(0,0,0,0.15)', paddingBottom: '2px' }}>
+                      Yugoslav
+                    </p>
+                  </div>
+                </div>
+
+                {/* Row */}
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="flex flex-col gap-1">
+                    <p style={{ fontSize: '0.55rem', color: '#8A8070', letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'var(--font-body)' }}>
+                      Age
+                    </p>
+                    <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.95rem', color: '#2A2520', borderBottom: '1px solid rgba(0,0,0,0.15)', paddingBottom: '2px' }}>
+                      31
+                    </p>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <p style={{ fontSize: '0.55rem', color: '#8A8070', letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'var(--font-body)' }}>
+                      Languages
+                    </p>
+                    <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.95rem', color: '#2A2520', borderBottom: '1px solid rgba(0,0,0,0.15)', paddingBottom: '2px' }}>
+                      4
+                    </p>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <p style={{ fontSize: '0.55rem', color: '#8A8070', letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'var(--font-body)' }}>
+                      Codename
+                    </p>
+                    <p style={{ fontFamily: 'var(--font-display)', fontSize: '0.9rem', color: '#7A1616', borderBottom: '1px solid rgba(0,0,0,0.15)', paddingBottom: '2px' }}>
+                      STARLING
+                    </p>
+                  </div>
+                </div>
+
+                {/* Assessor notes */}
+                <div className="flex flex-col gap-1 mt-1">
+                  <p style={{ fontSize: '0.55rem', color: '#8A8070', letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'var(--font-body)' }}>
+                    Assessor Notes
+                  </p>
+                  <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.95rem', color: '#2A2520', lineHeight: 1.7 }}>
+                    Subject presents as highly cooperative. Exceptional verbal intelligence.
+                    Responds readily to structured dialogue around purpose and meaning,
+                    issued standard Kavala reading material on arrival per protocol.
+                    Strong candidate for full Recalibration protocol.
+                  </p>
+                </div>
+
+                {/* Redacted section with angry annotation */}
+                <div className="flex flex-col gap-1.5 mt-1 relative">
+                  <p style={{ fontSize: '0.55rem', color: '#8A8070', letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'var(--font-body)' }}>
+                    Programme Assignment
+                  </p>
+                  <div style={{ height: '14px', background: '#2A2520', borderRadius: '1px', width: '100%' }} />
+                  <div style={{ height: '14px', background: '#2A2520', borderRadius: '1px', width: '75%' }} />
+                  <div style={{ height: '14px', background: '#2A2520', borderRadius: '1px', width: '90%' }} />
+
+                  {/* Someone was here before */}
+                  <p style={{
+                    fontFamily: 'var(--font-hand)',
+                    fontSize: '0.85rem',
+                    color: '#7A1616',
+                    transform: 'rotate(-2deg)',
+                    marginTop: '6px',
+                    marginLeft: '4px',
+                    opacity: 0.85,
+                    lineHeight: 1.4,
+                  }}>
+                    He didn't choose this! -  C.
+                  </p>
+                </div>
+                {/* Authorisation */}
+                <div className="flex flex-col gap-3 mt-2 pt-3 border-t border-black/10">
+                  <div className="flex items-start justify-between">
+                    <div className="flex flex-col gap-1">
+                      <p style={{ fontSize: '0.55rem', color: '#8A8070', letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'var(--font-body)' }}>
+                        Authorised by
+                      </p>
+                      <p style={{ fontFamily: 'var(--font-hand)', fontSize: '1rem', color: '#2A2520' }}>
+                        Dr. A. Walsh
+                      </p>
+                    </div>
+                    <div className="flex flex-col items-end gap-1">
+                      <p style={{ fontSize: '0.55rem', color: '#8A8070', letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'var(--font-body)' }}>
+                        Classification
+                      </p>
+                      <p style={{ fontFamily: 'var(--font-display)', fontSize: '0.75rem', color: '#7A1616', letterSpacing: '0.15em' }}>
+                        Eyes Only
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Marginal note — below authorisation, rotated slightly */}
+                  <p style={{
+                    fontFamily: 'var(--font-hand)',
+                    fontSize: '0.72rem',
+                    color: '#5A5040',
+                    transform: 'rotate(-1deg)',
+                    opacity: 0.65,
+                    lineHeight: 1.5,
+                    alignSelf: 'flex-start',
+                    marginTop: '4px',
+                  }}>
+                    Ref: Walsh Protocol p.47 — see subject reading material
+                  </p>
+                </div>
+
+              </div>
+              {/* Answer input */}
+              <div className="flex flex-col gap-3 border-t border-black/10 pt-4 mt-2">
+                <p style={{ color: '#7A1616', fontSize: '0.6rem', letterSpacing: '0.4em', fontFamily: 'var(--font-body)', textTransform: 'uppercase' }}>
+                  Classified — Analyst Input
+                </p>
+                <p style={{ color: '#2A2520', fontSize: '0.75rem', lineHeight: '1.8', fontFamily: 'var(--font-body)' }}>
+                  Institutions choose their words carefully. The ones they display say as much about what they're hiding as what they believe. Read everything, including what they chose to put on the wall.
+                </p>
+                <AnswerInput answer="WILLING" onUnlock={() => onUnlock('002')} />
+              </div>
             </div>
-            <div className="flex flex-col items-end gap-1">
-              <p style={{ fontSize: '0.55rem', color: '#8A8070', fontFamily: 'var(--font-body)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
-                Case No.
-              </p>
-              <p style={{ fontFamily: 'var(--font-display)', fontSize: '0.85rem', color: '#7A1616', letterSpacing: '0.1em' }}>
-                KVL-007-1963-Ω
-              </p>
-            </div>
-          </div>
-
-          {/* Form fields */}
-          <div className="flex flex-col gap-3">
-            {/* Row */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-1">
-                <p style={{ fontSize: '0.55rem', color: '#8A8070', letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'var(--font-body)' }}>
-                  Date of Intake
-                </p>
-                <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.95rem', color: '#2A2520', borderBottom: '1px solid rgba(0,0,0,0.15)', paddingBottom: '2px' }}>
-                  3 March 1963
-                </p>
-              </div>
-              <div className="flex flex-col gap-1">
-                <p style={{ fontSize: '0.55rem', color: '#8A8070', letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'var(--font-body)' }}>
-                  Station Officer
-                </p>
-                <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.95rem', color: '#2A2520', borderBottom: '1px solid rgba(0,0,0,0.15)', paddingBottom: '2px' }}>
-                  ████████
-                </p>
-              </div>
-            </div>
-
-            {/* Row */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-1">
-                <p style={{ fontSize: '0.55rem', color: '#8A8070', letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'var(--font-body)' }}>
-                  Subject Name
-                </p>
-                <div style={{ height: '22px', background: '#2A2520', borderRadius: '1px', width: '100%' }} />
-              </div>
-              <div className="flex flex-col gap-1">
-                <p style={{ fontSize: '0.55rem', color: '#8A8070', letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'var(--font-body)' }}>
-                  Nationality
-                </p>
-                <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.95rem', color: '#2A2520', borderBottom: '1px solid rgba(0,0,0,0.15)', paddingBottom: '2px' }}>
-                  Yugoslav
-                </p>
-              </div>
-            </div>
-
-            {/* Row */}
-            <div className="grid grid-cols-3 gap-4">
-              <div className="flex flex-col gap-1">
-                <p style={{ fontSize: '0.55rem', color: '#8A8070', letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'var(--font-body)' }}>
-                  Age
-                </p>
-                <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.95rem', color: '#2A2520', borderBottom: '1px solid rgba(0,0,0,0.15)', paddingBottom: '2px' }}>
-                  31
-                </p>
-              </div>
-              <div className="flex flex-col gap-1">
-                <p style={{ fontSize: '0.55rem', color: '#8A8070', letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'var(--font-body)' }}>
-                  Languages
-                </p>
-                <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.95rem', color: '#2A2520', borderBottom: '1px solid rgba(0,0,0,0.15)', paddingBottom: '2px' }}>
-                  4
-                </p>
-              </div>
-              <div className="flex flex-col gap-1">
-                <p style={{ fontSize: '0.55rem', color: '#8A8070', letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'var(--font-body)' }}>
-                  Codename
-                </p>
-                <p style={{ fontFamily: 'var(--font-display)', fontSize: '0.9rem', color: '#7A1616', borderBottom: '1px solid rgba(0,0,0,0.15)', paddingBottom: '2px' }}>
-                  STARLING
-                </p>
-              </div>
-            </div>
-
-            {/* Assessor notes */}
-            <div className="flex flex-col gap-1 mt-1">
-              <p style={{ fontSize: '0.55rem', color: '#8A8070', letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'var(--font-body)' }}>
-                Assessor Notes
-              </p>
-              <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.95rem', color: '#2A2520', lineHeight: 1.7 }}>
-                Subject presents as highly cooperative. Exceptional verbal intelligence.
-                Demonstrates immediate identification with themes of meaning-reconstruction
-                post-displacement. Issued standard Kavala reading material on arrival.
-                Strong candidate for full Recalibration protocol.
-              </p>
-            </div>
-
-            {/* Redacted section with angry annotation */}
-            <div className="flex flex-col gap-1.5 mt-1 relative">
-              <p style={{ fontSize: '0.55rem', color: '#8A8070', letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'var(--font-body)' }}>
-                Programme Assignment
-              </p>
-              <div style={{ height: '14px', background: '#2A2520', borderRadius: '1px', width: '100%' }} />
-              <div style={{ height: '14px', background: '#2A2520', borderRadius: '1px', width: '75%' }} />
-              <div style={{ height: '14px', background: '#2A2520', borderRadius: '1px', width: '90%' }} />
-
-              {/* Someone was here before */}
-              <p style={{
-                fontFamily: 'var(--font-hand)',
-                fontSize: '0.85rem',
-                color: '#7A1616',
-                transform: 'rotate(-2deg)',
-                marginTop: '6px',
-                marginLeft: '4px',
-                opacity: 0.85,
-                lineHeight: 1.4,
-              }}>
-                He didn't choose this!
-              </p>
-            </div>
-
-            {/* Authorisation */}
-            <div className="flex items-start justify-between mt-2 pt-3 border-t border-black/10 relative">
-              <div className="flex flex-col gap-1">
-                <p style={{ fontSize: '0.55rem', color: '#8A8070', letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'var(--font-body)' }}>
-                  Authorised by
-                </p>
-                <p style={{ fontFamily: 'var(--font-hand)', fontSize: '1rem', color: '#2A2520' }}>
-                  Dr. A. Walsh
-                </p>
-              </div>
-              <div className="flex flex-col items-end gap-1">
-                <p style={{ fontSize: '0.55rem', color: '#8A8070', letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'var(--font-body)' }}>
-                  Classification
-                </p>
-                <p style={{ fontFamily: 'var(--font-display)', fontSize: '0.75rem', color: '#7A1616', letterSpacing: '0.15em' }}>
-                  Eyes Only
-                </p>
-              </div>
-
-              {/* The actual clue — tucked in the corner, small, easy to miss */}
-              <p style={{
-                position: 'absolute',
-                bottom: '0px',
-                left: '50%',
-                transform: 'translateX(-50%) rotate(1deg)',
-                fontFamily: 'var(--font-hand)',
-                fontSize: '0.7rem',
-                color: '#5A5040',
-                opacity: 0.7,
-                whiteSpace: 'nowrap',
-                letterSpacing: '0.02em',
-              }}>
-                Ref: Walsh Protocol p.47 — see subject reading material
-              </p>
-            </div>
-
-          </div>
-          {/* Answer input */}
-          <div className="flex flex-col gap-3 border-t border-black/10 pt-4 mt-2">
-            <p style={{ color: '#7A1616', fontSize: '0.6rem', letterSpacing: '0.4em', fontFamily: 'var(--font-body)', textTransform: 'uppercase' }}>
-              Classified — Analyst Input
-            </p>
-            <p style={{ color: '#2A2520', fontSize: '0.75rem', lineHeight: '1.8', fontFamily: 'var(--font-body)' }}>
-              Something on this document is not what it appears. Look carefully at everything, the photograph, the text, the details others might look past.
-            </p>
-            <AnswerInput answer="WILLING" onUnlock={() => onUnlock('002')} />
-          </div>
-        </div>
           )}
-        {/* FILE 002 placeholder */}
-        {fileId === '002' && (
-          <div style={{ color: '#2A2520', fontFamily: 'var(--font-body)', fontSize: '0.875rem', lineHeight: '2' }}>
-            <p style={{ color: '#7A1616', fontSize: '0.6rem', letterSpacing: '0.4em', marginBottom: '1.5rem' }}>
-              OPERATION KAVAL — TRANSIT RECORD
-            </p>
-            <p>Twenty-three subjects. Six countries. One station.</p>
-            <br />
-            <p>All released. All unaware.</p>
-            <br />
-            <p>Seven carry the Ω marker. We don't know why yet.</p>
-          </div>
-        )}
+          {/* FILE 002 placeholder */}
+          {fileId === '002' && (
+            <div className="flex flex-col gap-5">
 
-        {/* FILE 003 placeholder */}
-        {fileId === '003' && (
-          <div style={{ color: '#2A2520', fontFamily: 'var(--font-body)', fontSize: '0.875rem', lineHeight: '2' }}>
-            <p style={{ color: '#7A1616', fontSize: '0.6rem', letterSpacing: '0.4em', marginBottom: '1.5rem' }}>
-              OPERATION KAVAL — INTERNAL DISSENT
-            </p>
-            <p>She saw it clearly. That's why she had to go.</p>
-            <br />
-            <p style={{ fontStyle: 'italic' }}>— The Parish Memo, page two missing.</p>
-          </div>
-        )}
-        <button
-          onClick={() => {
-            if (fileId === '000') onUnlock('001')
-            onClose()
-          }}
-          className="self-start text-[0.65rem] tracking-[0.4em] uppercase mt-4 hover:opacity-60 transition-opacity duration-200 cursor-pointer"
-          style={{ color: '#7A1616', fontFamily: 'var(--font-body)' }}
-        >
-          Close File
-        </button>
+              {/* Letterhead */}
+              <div className="flex flex-col gap-1 border-b border-black/15 pb-4">
+                <p style={{ color: '#7A1616', fontSize: '0.55rem', letterSpacing: '0.5em', fontFamily: 'var(--font-body)', textTransform: 'uppercase' }}>
+                  The Heron Foundation — Transit Record
+                </p>
+                <p style={{ color: '#2A2520', fontSize: '0.55rem', letterSpacing: '0.3em', fontFamily: 'var(--font-body)', textTransform: 'uppercase' }}>
+                  Kavala Station · Northern Greece · 1961—1966
+                </p>
+              </div>
 
+              {/* Document header */}
+              <div className="flex items-start justify-between">
+                <div className="flex flex-col gap-1">
+                  <p style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', color: '#1A1714', letterSpacing: '0.08em' }}>
+                    Subject Transit Log — Restricted
+                  </p>
+                  <p style={{ fontSize: '0.6rem', color: '#8A8070', fontFamily: 'var(--font-body)', letterSpacing: '0.2em', textTransform: 'uppercase' }}>
+                    Form HF-23 · Eyes Only
+                  </p>
+                </div>
+                <div className="flex flex-col items-end gap-1">
+                  <p style={{ fontSize: '0.55rem', color: '#8A8070', fontFamily: 'var(--font-body)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
+                    Total subjects
+                  </p>
+                  <p style={{ fontFamily: 'var(--font-display)', fontSize: '0.85rem', color: '#7A1616' }}>
+                    23
+                  </p>
+                </div>
+              </div>
+
+              {/* Damage note */}
+              <p style={{
+                fontFamily: 'var(--font-hand)',
+                fontSize: '0.78rem',
+                color: '#8A8070',
+                fontStyle: 'italic',
+                lineHeight: 1.6,
+              }}>
+                Document recovered in partial condition. Water damage sustained during 1971 transfer. Sections marked ██ are unrecoverable. Entries marked Ω require separate clearance.
+              </p>
+
+              {/* Non-omega entries — damaged, mostly unreadable */}
+              <div className="flex flex-col gap-2 border-t border-black/10 pt-3">
+                <p style={{ fontSize: '0.55rem', color: '#8A8070', letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'var(--font-body)', marginBottom: '4px' }}>
+                  General Population — Subjects 001—016
+                </p>
+
+                {[
+                  '001 — LAPWING — ██████ — released: ██████',
+                  '002 — FINCH — Polish — released: ██████ — status: ██',
+                  '003 — ██████ — Romanian — ██████',
+                  '004 — REED — ██████ — released: Berlin, 196█',
+                  '005 — ██████ — ██████ — status: lost',
+                  '006 — SPARROW — Yugoslav — released: ██████ — status: ██████',
+                  '007 — ██████ — Hungarian — ██████ — destination: ██████',
+                  '008 — THORN — ██████ — released: ██████',
+                  '009 — ██████ — Bulgarian — ██████ — status: reintegrated',
+                  '010 — WREN — ██████ — released: Warsaw, 196█ — status: ██',
+                  '011—016 — ██████████████████████████████████████',
+                ].map((entry, i) => (
+                  <p key={i} style={{
+                    fontFamily: 'var(--font-hand)',
+                    fontSize: '0.82rem',
+                    color: '#2A2520',
+                    lineHeight: 1.6,
+                    opacity: i === 10 ? 0.4 : 0.75,
+                  }}>
+                    {entry}
+                  </p>
+                ))}
+              </div>
+
+              <p style={{
+                fontFamily: 'var(--font-hand)',
+                fontSize: '0.82rem',
+                color: '#7A1616',
+                fontStyle: 'italic',
+                transform: 'rotate(-1deg)',
+                opacity: 0.75,
+                marginBottom: '8px',
+              }}>
+                Each entry gives you something. Start at the beginning.
+              </p>
+
+              {/* Omega entries — more intact but damaged in specific places */}
+              <div className="flex flex-col gap-4 border-t border-black/10 pt-3">
+                <p style={{ fontSize: '0.55rem', color: '#7A1616', letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'var(--font-body)', marginBottom: '4px' }}>
+                  Ω — Restricted Entries
+                </p>
+
+                {/* P — Prague — clean */}
+                <div className="flex flex-col gap-0.5">
+                  <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.85rem', color: '#2A2520', lineHeight: 1.6 }}>
+                    Ω — CRANE — Released: Prague, 1964 — status: reintegrated
+                  </p>
+                </div>
+
+                {/* A — Autumn — clean */}
+                <div className="flex flex-col gap-0.5">
+                  <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.85rem', color: '#2A2520', lineHeight: 1.6 }}>
+                    Ω — MARTIN — Arrived: autumn 1962 — nationality: ██████
+                  </p>
+                </div>
+
+                {/* R — Reside — scratched */}
+                <div className="flex flex-col gap-0.5">
+                  <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.85rem', color: '#2A2520', lineHeight: 1.6 }}>
+                    Ω — IBIS — destination: ██████ — last known:{' '}
+                    <span className="scratched">R</span>
+                    <span style={{ opacity: 0.3 }}>█side███</span>
+                  </p>
+                </div>
+                {/* I — Interrogation — scratched */}
+                <div className="flex flex-col gap-0.5">
+                  <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.85rem', color: '#2A2520', lineHeight: 1.6 }}>
+                    Ω — EGRET — intake: ███ — field note:{' '}
+                    <span className="scratched">I</span>
+                    <span style={{ opacity: 0.28 }}>nterrogation resistant</span>
+                  </p>
+                </div>
+
+                {/* S — Sofia — clean */}
+                <div className="flex flex-col gap-0.5">
+                  <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.85rem', color: '#2A2520', lineHeight: 1.6 }}>
+                    Ω — SWIFT — released: Sofia, 1965 — track: lost
+                  </p>
+                </div>
+
+                {/* H — almost gone — hardest */}
+                <div className="flex flex-col gap-0.5">
+                  <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.85rem', color: '#2A2520', lineHeight: 1.6 }}>
+                    Ω — STARLING — KVL-007-1963-Ω — assessor:{' '}
+                    <span className="ghost">H</span>
+                    <span style={{ opacity: 0.1 }}>░░░░░░░░</span>
+                  </p>
+                  <p style={{
+                    fontFamily: 'var(--font-hand)',
+                    fontSize: '0.72rem',
+                    color: '#7A1616',
+                    fontStyle: 'italic',
+                    opacity: 0.6,
+                    marginTop: '2px',
+                  }}>
+                    — flagged for removal. See C.
+                  </p>
+                </div>
+
+              </div>
+              {/* Answer input */}
+              <div className="flex flex-col gap-3 border-t border-black/10 pt-4 mt-1">
+                <p style={{ color: '#7A1616', fontSize: '0.6rem', letterSpacing: '0.4em', fontFamily: 'var(--font-body)', textTransform: 'uppercase' }}>
+                  Analyst Input
+                </p>
+                <p style={{ color: '#2A2520', fontSize: '0.75rem', lineHeight: '1.8', fontFamily: 'var(--font-body)' }}>
+                  The Ω entries are not random. Some letters are harder to read than others,that is not an accident.
+                </p>
+                <AnswerInput answer="PARISH" onUnlock={() => onUnlock('003')} />
+              </div>
+
+            </div>
+          )}
+          {fileId === '003' && (
+            <div className="flex flex-col gap-5">
+
+              {/* Letterhead */}
+              <div className="flex flex-col gap-1 border-b border-black/15 pb-4">
+                <p style={{ color: '#7A1616', fontSize: '0.55rem', letterSpacing: '0.5em', fontFamily: 'var(--font-body)', textTransform: 'uppercase' }}>
+                  Ministry of Information — Internal Rectification Memorandum
+                </p>
+                <p style={{ color: '#2A2520', fontSize: '0.55rem', letterSpacing: '0.3em', fontFamily: 'var(--font-body)', textTransform: 'uppercase' }}>
+                  Classification: Pluswise Restricted · Doubleplusgood Confidential
+                </p>
+              </div>
+
+              {/* Document header */}
+              <div className="flex items-start justify-between">
+                <div className="flex flex-col gap-1">
+                  <p style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', color: '#1A1714', letterSpacing: '0.08em' }}>
+                    Rectification Request — Operation KAVAL
+                  </p>
+                  <p style={{ fontSize: '0.6rem', color: '#8A8070', fontFamily: 'var(--font-body)', letterSpacing: '0.2em', textTransform: 'uppercase' }}>
+                    Authored: E. Parish · Vienna Station · November 1966
+                  </p>
+                </div>
+                <div className="flex flex-col items-end gap-1">
+                  <p style={{ fontSize: '0.55rem', color: '#8A8070', fontFamily: 'var(--font-body)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
+                    Status
+                  </p>
+                  <p style={{ fontFamily: 'var(--font-display)', fontSize: '0.75rem', color: '#7A1616' }}>
+                    Page 2 Missing
+                  </p>
+                </div>
+              </div>
+
+              {/* Archival note */}
+              <p style={{
+                fontFamily: 'var(--font-hand)',
+                fontSize: '0.78rem',
+                color: '#8A8070',
+                fontStyle: 'italic',
+                lineHeight: 1.6,
+              }}>
+                Document recovered 1998 under misfiled reference. Language reflects internal communication standards of the period. The officer who marked the files reviewed this document before archive entry. Page two not recovered.
+              </p>
+
+              {/* Memo body */}
+              <div className="flex flex-col gap-4 border-t border-black/10 pt-4">
+
+                <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.95rem', color: '#2A2520', lineHeight: 1.85 }}>
+                  To: Pluswise Director, Clandestine Operations<br />
+                  From: E. Parish, Junior Analyst, Vienna Station<br />
+                  Re: Operation KAVAL — Formal Rectification Request<br />
+                  Date: 14 November 1966
+                </p>
+
+                <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.95rem', color: '#2A2520', lineHeight: 1.85 }}>
+                  This memorandum constitutes a formal request for operational rectification regarding KAVAL's continued pluswise function. The programme operates on the assumption that identity is a{' '}
+                  <span style={{
+                    color: '#3A2E28',
+                    fontWeight: 600,
+                    letterSpacing: '0.03em',
+                  }}>
+                    conduit
+                  </span>
+                  {' '}that can be demolished and rebuilt to specification. This assumption is not supported by available case documentation and represents a crimethinkful misreading of the psychological literature on which Dr. Walsh bases his work.
+                </p>
+
+                <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.95rem', color: '#2A2520', lineHeight: 1.85 }}>
+                  Dr. Walsh has confused compliance with{' '}
+                  <span style={{
+                    color: '#3A2E28',
+                    fontWeight: 600,
+                    letterSpacing: '0.03em',
+                  }}>
+                    obtention
+                  </span>
+                  {' '}of goodthink outcomes. The subjects are not ideological assets. They are displaced persons who have learned to{' '}
+                  <span style={{
+                    color: '#3A2E28',
+                    fontWeight: 600,
+                    letterSpacing: '0.03em',
+                  }}>
+                    recount
+                  </span>
+                  {' '}stability under observation. The programme is not creating true believers. It is creating very convincing{' '}
+                  <span style={{
+                    color: '#3A2E28',
+                    fontWeight: 600,
+                    letterSpacing: '0.03em',
+                  }}>
+                    motions
+                  </span>
+                  {' '}of belief — and such persons, given sufficient time and external pressure, will eventually reach for what lies{' '}
+                  <span style={{
+                    color: '#3A2E28',
+                    fontWeight: 600,
+                    letterSpacing: '0.03em',
+                  }}>
+                    overhead
+                  </span>
+                  {' '}the recalibrated surface.
+                </p>
+
+                <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.95rem', color: '#2A2520', lineHeight: 1.85 }}>
+                  I am formally requesting that continued operation of KAVAL be{' '}
+                  <span style={{
+                    color: '#3A2E28',
+                    fontWeight: 600,
+                    letterSpacing: '0.03em',
+                  }}>
+                    rescinded
+                  </span>
+                  {' '}pending independent review. The ethical implications of current methodology cannot be{' '}
+                  <span style={{
+                    color: '#3A2E28',
+                    fontWeight: 600,
+                    letterSpacing: '0.03em',
+                  }}>
+                    abstracted
+                  </span>
+                  {' '}within the programme's own operational framework. We are not rehabilitating displaced persons. We are using their displacement as a vector. I will not dignify this with the language of national security.
+                </p>
+
+                <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.95rem', color: '#2A2520', lineHeight: 1.85 }}>
+                  I will not sign off on KAVAL's continuation without a{' '}
+                  <span style={{
+                    color: '#3A2E28',
+                    fontWeight: 600,
+                    letterSpacing: '0.03em',
+                  }}>
+                    normalized
+                  </span>
+                  {' '}review by an body outside this structure. I recognise this memorandum places my position in jeopardy. I am submitting it regardless. Some things cannot be made to fit the approved vocabulary.
+                </p>
+
+                <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.95rem', color: '#2A2520', lineHeight: 1.85 }}>
+                  These are human beings. Not{' '}
+                  <span style={{
+                    color: '#3A2E28',
+                    fontWeight: 600,
+                    letterSpacing: '0.03em',
+                  }}>
+                    theories
+                  </span>
+                  . Not assets. Not subjects. People.
+                </p>
+
+                <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.95rem', color: '#2A2520', lineHeight: 1.85 }}>
+                  — E. Parish<br />
+                  Vienna Station, November 1966
+                </p>
+
+                {/* Missing page */}
+                <div style={{
+                  borderTop: '1px dashed rgba(42,37,32,0.2)',
+                  paddingTop: '12px',
+                  marginTop: '4px',
+                }}>
+                  <p style={{
+                    fontFamily: 'var(--font-hand)',
+                    fontSize: '0.78rem',
+                    color: '#7A1616',
+                    fontStyle: 'italic',
+                    opacity: 0.7,
+                  }}>
+                    [ Page 2 not recovered. Filing reference destroyed 1967. ]
+                  </p>
+                </div>
+
+              </div>
+
+              {/* Hint and answer */}
+              <div className="flex flex-col gap-3 border-t border-black/10 pt-4 mt-1">
+                <p style={{ color: '#7A1616', fontSize: '0.6rem', letterSpacing: '0.4em', fontFamily: 'var(--font-body)', textTransform: 'uppercase' }}>
+                  Analyst Input
+                </p>
+                <p style={{ color: '#2A2520', fontSize: '0.75rem', lineHeight: '1.8', fontFamily: 'var(--font-body)' }}>
+                  Language can be a cage. Some governments understood this better than others. One author wrote about it in 1949. If the words in this document feel wrong, and some of them do, perhaps that is because they were written in a language designed to make wrong seem right. Look at what doesn't fit in. Collect it in order.
+                </p>
+                <AnswerInput answer="CORMORANT" onUnlock={() => onUnlock('004')} />
+              </div>
+
+            </div>
+          )}
+          <button
+            onClick={() => {
+              if (fileId === '000') onUnlock('001')
+              onClose()
+            }}
+            className="self-start text-[0.65rem] tracking-[0.4em] uppercase mt-4 hover:opacity-60 transition-opacity duration-200 cursor-pointer"
+            style={{ color: '#7A1616', fontFamily: 'var(--font-body)' }}
+          >
+            Close File
+          </button>
+
+        </div>
       </div>
-    </div>
     </div >
   )
 }
 
 // --- WallThreads ---
-// Chaotic strings connecting documents — purely decorative SVG
+// strings connecting documents
 function WallThreads() {
   return (
     <svg
@@ -516,9 +851,8 @@ function DocumentCard({
     red: '#C0392B',
     grey: '#3D3B2F',
   }
-
+  
   const isClickable = status === 'available'
-
   return (
     <div
       className="relative pt-3"
@@ -660,6 +994,20 @@ export default function Archive() {
       style={{ fontFamily: 'var(--font-body)' }}
     >
 
+      <svg width="0" height="0" style={{ position: 'absolute' }}>
+        <defs>
+          <filter id="scratch" x="-20%" y="-20%" width="140%" height="140%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" xChannelSelector="R" yChannelSelector="G" result="displaced" />
+            <feComposite in="displaced" in2="SourceGraphic" operator="in" />
+          </filter>
+          <filter id="fade" x="-20%" y="-20%" width="140%" height="140%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" xChannelSelector="R" yChannelSelector="G" result="displaced" />
+            <feComposite in="displaced" in2="SourceGraphic" operator="in" />
+          </filter>
+        </defs>
+      </svg>
       {/* Top bar */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-bv-dust">
         <div className="flex items-center gap-3">
@@ -883,7 +1231,7 @@ export default function Archive() {
                     docNumber="Document 003"
                     title="The Parish Memo [1966]"
                     description="Internal dissent. Page two missing."
-                    status={docStatus('003', true)}
+                    status={docStatus('003')}
                     pinColor="red"
                     onClick={() => isUnlocked('003') ? setActiveFile('003') : undefined}
                   />

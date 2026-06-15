@@ -52,3 +52,21 @@ body {
   scrollbar-width: thin;
   scrollbar-color: #3D3B2F #1A1714;
 }
+
+.scratched {
+  display: inline-block;
+  filter: url(#scratch);
+  opacity: 0.5;
+}
+
+.faded {
+  display: inline-block;
+  filter: url(#fade);
+  opacity: 0.25;
+}
+
+.ghost {
+  display: inline-block;
+  filter: url(#fade);
+  opacity: 0.12;
+}
