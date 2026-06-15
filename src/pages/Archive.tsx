@@ -466,7 +466,7 @@ function FileViewer({
                 </div>
               </div>
 
-              {/* Damage note */}
+              {/* Damaged note */}
               <p style={{
                 fontFamily: 'var(--font-hand)',
                 fontSize: '0.78rem',
@@ -477,7 +477,7 @@ function FileViewer({
                 Document recovered in partial condition. Water damage sustained during 1971 transfer. Sections marked ██ are unrecoverable. Entries marked Ω require separate clearance.
               </p>
 
-              {/* Non-omega entries — damaged, mostly unreadable */}
+              {/* Non-omega entries*/}
               <div className="flex flex-col gap-2 border-t border-black/10 pt-3">
                 <p style={{ fontSize: '0.55rem', color: '#8A8070', letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'var(--font-body)', marginBottom: '4px' }}>
                   General Population — Subjects 001—016
@@ -780,6 +780,111 @@ function FileViewer({
 
             </div>
           )}
+
+          {fileId === '004' && (
+            <div className="flex flex-col gap-5">
+
+              {/* Letterhead */}
+              <div className="flex flex-col gap-1 border-b border-black/15 pb-4">
+                <p style={{ color: '#7A1616', fontSize: '0.55rem', letterSpacing: '0.5em', fontFamily: 'var(--font-body)', textTransform: 'uppercase' }}>
+                  BlackVault — Unclassified Submission
+                </p>
+                <p style={{ color: '#2A2520', fontSize: '0.55rem', letterSpacing: '0.3em', fontFamily: 'var(--font-body)', textTransform: 'uppercase' }}>
+                  Origin: Anonymous Upload · Received: 04:32 UTC
+                </p>
+              </div>
+
+              {/* Document header */}
+              <div className="flex items-start justify-between">
+                <div className="flex flex-col gap-1">
+                  <p style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', color: '#1A1714', letterSpacing: '0.08em' }}>
+                    Photograph — Brussels, undated
+                  </p>
+                  <p style={{ fontSize: '0.6rem', color: '#8A8070', fontFamily: 'var(--font-body)', letterSpacing: '0.2em', textTransform: 'uppercase' }}>
+                    No accompanying note. No sender identity.
+                  </p>
+                </div>
+                <div className="flex flex-col items-end gap-1">
+                  <p style={{ fontSize: '0.55rem', color: '#8A8070', fontFamily: 'var(--font-body)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
+                    File
+                  </p>
+                  <p style={{ fontFamily: 'var(--font-display)', fontSize: '0.85rem', color: '#7A1616' }}>
+                    KVL-004
+                  </p>
+                </div>
+              </div>
+
+              {/* Archival note */}
+              <p style={{
+                fontFamily: 'var(--font-hand)',
+                fontSize: '0.78rem',
+                color: '#8A8070',
+                fontStyle: 'italic',
+                lineHeight: 1.6,
+              }}>
+                This file appeared in the BlackVault upload queue forty minutes after MOTH_33's original submission. No account was used. The IP address resolved to a VPN exit node in Reykjavik. We do not know who sent this or why.
+              </p>
+
+              {/* The photograph */}
+              <div className="flex flex-col gap-2">
+                <img
+                  src="/assets/47.5017_N_4.3571_E.jpg"
+                  alt=""
+                  style={{
+                    width: '100%',
+                    filter: 'grayscale(100%) contrast(1.1) brightness(0.9)',
+                    border: '1px solid rgba(0,0,0,0.2)',
+                  }}
+                />
+                <div className="flex items-center justify-between">
+                  <p style={{
+                    fontSize: '0.55rem',
+                    color: '#8A8070',
+                    letterSpacing: '0.2em',
+                    textTransform: 'uppercase',
+                    fontFamily: 'var(--font-body)',
+                  }}>
+                    No caption. No date. No location metadata.
+                  </p>
+
+                  <a href="/public/assets/50.8410_N_4.3570_E.jpg"
+                    download="50.8410_N_4.3570_E.jpg"
+                    style={{
+                      fontSize: '0.6rem',
+                      color: '#7A1616',
+                      letterSpacing: '0.2em',
+                      textTransform: 'uppercase',
+                      fontFamily: 'var(--font-body)',
+                      textDecoration: 'none',
+                      borderBottom: '1px solid #7A1616',
+                      paddingBottom: '1px',
+                    }}>
+                    Download file
+                  </a>
+                </div>
+              </div>
+
+              {/* Hint */}
+              <div className="flex flex-col gap-3 border-t border-black/10 pt-4 mt-1">
+                <p style={{ color: '#7A1616', fontSize: '0.6rem', letterSpacing: '0.4em', fontFamily: 'var(--font-body)', textTransform: 'uppercase' }}>
+                  Analyst Note
+                </p>
+                <p style={{ color: '#2A2520', fontSize: '0.75rem', lineHeight: '1.8', fontFamily: 'var(--font-body)' }}>
+                  Someone sent this for a reason. A photograph is never just a photograph. Look at everything — what's visible, what's hidden, what the file itself carries. Files have memory even when images don't.
+                </p>
+                <p style={{ color: '#2A2520', fontSize: '0.75rem', lineHeight: '1.8', fontFamily: 'var(--font-body)' }}>
+                  If you find something encrypted, you already have the key. You earned it in Document 001.
+                </p>
+              </div>
+
+              {/* Answer input */}
+              <div className="flex flex-col gap-3 border-t border-black/10 pt-4 mt-1">
+                <AnswerInput answer="VANTAGE" onUnlock={() => onUnlock('waitlist')} />
+              </div>
+
+            </div>
+          )}
+
           <button
             onClick={() => {
               if (fileId === '000') onUnlock('001')
@@ -790,7 +895,6 @@ function FileViewer({
           >
             Close File
           </button>
-
         </div>
       </div>
     </div >
@@ -851,7 +955,7 @@ function DocumentCard({
     red: '#C0392B',
     grey: '#3D3B2F',
   }
-  
+
   const isClickable = status === 'available'
   return (
     <div
@@ -977,6 +1081,10 @@ export default function Archive() {
   const [letterRead, setLetterRead] = useState(false)
 
   const handleUnlock = (id: string) => {
+    if (id === 'waitlist') {
+      window.location.href = '/waitlist'
+      return
+    }
     setUnlockedFiles(prev => prev.includes(id) ? prev : [...prev, id])
   }
 
@@ -1238,10 +1346,11 @@ export default function Archive() {
                   <DocumentCard
                     id="004"
                     docNumber="Document 004"
-                    title="— — — — — —"
-                    description="Access requires completing prior files."
+                    title="Photograph — Brussels"
+                    description="No sender. No note. Arrived forty minutes after MOTH_33."
                     status={docStatus('004')}
-                    pinColor="grey"
+                    pinColor="gold"
+                    onClick={() => isUnlocked('004') ? setActiveFile('004') : undefined}
                   />
                 </div>
               </div>
