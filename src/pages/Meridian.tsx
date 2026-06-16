@@ -61,43 +61,31 @@ export default function Meridian() {
         </div>
       </nav>
 
-      {/* Hero */}
-      <div style={{
-        background: '#1A3A2A',
-        padding: '80px 48px',
-        color: '#FAFAF8',
-      }}>
-        <p style={{
-          fontSize: '0.7rem',
-          letterSpacing: '0.3em',
-          textTransform: 'uppercase',
-          color: '#8AAA90',
-          fontFamily: 'Arial, sans-serif',
-          marginBottom: '16px',
-        }}>
-          Est. 1978 · Brussels, Belgium
-        </p>
-        <h1 style={{
-          fontSize: '2.8rem',
-          fontWeight: 400,
-          lineHeight: 1.2,
-          maxWidth: '640px',
-          marginBottom: '24px',
-          letterSpacing: '-0.01em',
-        }}>
-          Strengthening Democratic Resilience Across Borders
-        </h1>
-        <p style={{
-          fontSize: '1rem',
-          lineHeight: 1.8,
-          color: '#B8CCB8',
-          maxWidth: '560px',
-          fontFamily: 'Arial, sans-serif',
-        }}>
-          The Meridian Institute for Democratic Resilience is an independent
-          research organisation dedicated to the study of social cohesion,
-          ideological stability, and the long-term health of open societies.
-        </p>
+      <div
+        className="relative min-h-screen flex items-center bg-cover  bg-no-repeat"
+        style={{
+          backgroundImage: "url('/assets/50.8410_N_4.3570_E.jpg')",
+        }}
+      >
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-black/70" />
+
+        {/* Content */}
+        <div className="relative z-10 px-12 max-w-3xl text-white">
+          <p className="mb-4 text-xs uppercase tracking-[0.3em] text-green-300">
+            Est. 1978 · Brussels, Belgium
+          </p>
+
+          <h1 className="mb-6 text-5xl font-light leading-tight">
+            Strengthening Democratic Resilience Across Borders
+          </h1>
+
+          <p className="text-lg leading-8 text-green-100">
+            The Meridian Institute for Democratic Resilience is an independent
+            research organisation dedicated to the study of social cohesion,
+            ideological stability, and the long-term health of open societies.
+          </p>
+        </div>
       </div>
 
       {/* Mission statement */}
@@ -322,15 +310,10 @@ export default function Meridian() {
         </div>
 
         {/* Hidden key — same color as background, only visible on highlight */}
-        <p style={{
-          fontSize: '0.6rem',
-          color: '#FFFFFF',
-          background: '#FFFFFF',
-          fontFamily: 'Arial, sans-serif',
-          letterSpacing: '0.3em',
-          userSelect: 'text',
-          cursor: 'default',
-        }}>
+        <p className="text-[0.5rem] tracking-widest mb-1" style={{ color: '#C8C8C8' }}>
+          Some things are only visible when you look for them.
+        </p>
+        <p className="text-[0.6rem] tracking-[0.3em] select-text cursor-default" style={{ color: '#FAFAF8', background: '#FAFAF8' }}>
           STARLINGWASCHOSEN
         </p>
       </div>

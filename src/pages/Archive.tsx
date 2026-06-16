@@ -64,6 +64,186 @@ function AnswerInput({ answer, onUnlock }: { answer: string; onUnlock: () => voi
     </div>
   )
 }
+function Document004({ onUnlock }: { onUnlock: (id: string) => void }) {
+  const [stage, setStage] = useState(0)
+  const [input, setInput] = useState('')
+  const [status, setStatus] = useState<'idle' | 'correct' | 'wrong'>('idle')
+  const stages = [
+    {
+      clue: "The filename is not random. It leads to the place where it began. Find where they lead.",
+      answer: 'BRUSSELS',
+    },
+    {
+      clue: "You have the key. Now find what was hidden inside the file itself. dcode.fr. Vigenère.",
+      answer: 'VANTAGE',
+    },
+    {
+      clue: "Not everything hidden is locked away. Some things just need the right eyes. Go back to Meridian. Read what you can't see.",
+      answer: 'STARLINGWASCHOSEN',
+    },
+  ]
+
+  const currentStage = stages[stage]
+
+  const handleSubmit = () => {
+    if (input.trim().toUpperCase() === currentStage.answer.toUpperCase()) {
+      setStatus('correct')
+      setTimeout(() => {
+        if (stage === stages.length - 1) {
+          onUnlock('waitlist')
+        } else {
+          setStage(prev => prev + 1)
+          setInput('')
+          setStatus('idle')
+        }
+      }, 1200)
+    } else {
+      setStatus('wrong')
+      setTimeout(() => setStatus('idle'), 2000)
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-5">
+
+      {/* Letterhead */}
+      <div className="flex flex-col gap-1 border-b border-black/15 pb-4">
+        <p style={{ color: '#7A1616', fontSize: '0.55rem', letterSpacing: '0.5em', fontFamily: 'var(--font-body)', textTransform: 'uppercase' }}>
+          BlackVault — Unclassified Submission
+        </p>
+        <p style={{ color: '#2A2520', fontSize: '0.55rem', letterSpacing: '0.3em', fontFamily: 'var(--font-body)', textTransform: 'uppercase' }}>
+          Origin: Anonymous Upload · Received: 04:32 UTC
+        </p>
+      </div>
+
+      {/* Document header */}
+      <div className="flex items-start justify-between">
+        <div className="flex flex-col gap-1">
+          <p style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', color: '#1A1714', letterSpacing: '0.08em' }}>
+            Photograph — Brussels, undated
+          </p>
+          <p style={{ fontSize: '0.6rem', color: '#8A8070', fontFamily: 'var(--font-body)', letterSpacing: '0.2em', textTransform: 'uppercase' }}>
+            No accompanying note. No sender identity.
+          </p>
+        </div>
+        <div className="flex flex-col items-end gap-1">
+          <p style={{ fontSize: '0.55rem', color: '#8A8070', fontFamily: 'var(--font-body)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
+            File
+          </p>
+          <p style={{ fontFamily: 'var(--font-display)', fontSize: '0.85rem', color: '#7A1616' }}>
+            KVL-004
+          </p>
+        </div>
+      </div>
+
+      {/* Archival note */}
+      <p style={{
+        fontFamily: 'var(--font-hand)',
+        fontSize: '0.78rem',
+        color: '#8A8070',
+        fontStyle: 'italic',
+        lineHeight: 1.6,
+      }}>
+        This file appeared in the BlackVault upload queue forty minutes after MOTH_33's original submission. No account was used. The IP address resolved to a VPN exit node in Reykjavik. We do not know who sent this or why.
+      </p>
+
+      {/* The photograph */}
+      <div className="flex flex-col gap-2">
+        <img
+          src="/assets/50.8410_N_4.3570_E.jpg"
+          alt=""
+          style={{
+            width: '100%',
+            filter: 'grayscale(100%) contrast(1.1) brightness(0.9)',
+            border: '1px solid rgba(0,0,0,0.2)',
+          }}
+        />
+        <div className="flex items-center justify-between">
+          <p style={{
+            fontSize: '0.55rem',
+            color: '#8A8070',
+            letterSpacing: '0.2em',
+            textTransform: 'uppercase',
+            fontFamily: 'var(--font-body)',
+          }}>
+            No caption. No date. No location metadata.
+          </p>
+          <a
+            href="/assets/50.8410_N_4.3570_E.jpg"
+            download="50.8410_N_4.3570_E.jpg"
+            style={{
+              fontSize: '0.6rem',
+              color: '#7A1616',
+              letterSpacing: '0.2em',
+              textTransform: 'uppercase',
+              fontFamily: 'var(--font-body)',
+              textDecoration: 'none',
+              borderBottom: '1px solid #7A1616',
+              paddingBottom: '1px',
+            }}
+          >
+            Download file
+          </a>
+        </div>
+      </div>
+
+      {/* Multi stage answer */}
+      <div className="flex flex-col gap-3 border-t border-black/10 pt-4 mt-1">
+        <div className="flex items-center gap-3">
+          <p style={{ color: '#7A1616', fontSize: '0.6rem', letterSpacing: '0.4em', fontFamily: 'var(--font-body)', textTransform: 'uppercase' }}>
+            Analyst Input
+          </p>
+          <p style={{ color: '#3D3B2F', fontSize: '0.6rem', letterSpacing: '0.2em', fontFamily: 'var(--font-body)' }}>
+            {stage + 1} / 3
+          </p>
+        </div>
+
+        <p style={{ color: '#2A2520', fontSize: '0.75rem', lineHeight: '1.8', fontFamily: 'var(--font-body)' }}>
+          {currentStage.clue}
+        </p>
+
+        {status === 'correct' ? (
+          <p style={{ color: '#556B57', fontSize: '0.7rem', letterSpacing: '0.3em', fontFamily: 'var(--font-body)', textTransform: 'uppercase' }}>
+            {stage === stages.length - 1 ? '✓ Access granted. Redirecting...' : '✓ Correct. Loading next layer...'}
+          </p>
+        ) : (
+          <div className="flex flex-col gap-2">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleSubmit()}
+                placeholder="Enter your findings..."
+                className="flex-1 px-3 py-2 outline-none"
+                style={{
+                  backgroundColor: '#C8B89A',
+                  border: '1px solid rgba(0,0,0,0.2)',
+                  color: '#1A1714',
+                  fontFamily: 'var(--font-body)',
+                  fontSize: '0.8rem',
+                  letterSpacing: '0.1em',
+                }}
+              />
+              <button
+                onClick={handleSubmit}
+                className="px-4 py-2 text-[0.65rem] tracking-[0.3em] uppercase cursor-pointer"
+                style={{ backgroundColor: '#2A2520', color: '#D8CEB8', fontFamily: 'var(--font-body)' }}
+              >
+                Submit
+              </button>
+            </div>
+            {status === 'wrong' && (
+              <p style={{ color: '#7A1616', fontSize: '0.65rem', letterSpacing: '0.2em', fontFamily: 'var(--font-body)', textTransform: 'uppercase' }}>
+                Incorrect. Keep looking.
+              </p>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
 // --- FileViewer ---
 function FileViewer({
   fileId,
@@ -426,13 +606,13 @@ function FileViewer({
                   Classified — Analyst Input
                 </p>
                 <p style={{ color: '#2A2520', fontSize: '0.75rem', lineHeight: '1.8', fontFamily: 'var(--font-body)' }}>
-                  Institutions choose their words carefully. The ones they display say as much about what they're hiding as what they believe. Read everything, including what they chose to put on the wall.
+                  CLUE: Institutions choose their words carefully. The ones they display say as much about what they're hiding as what they believe. Read everything, including what they chose to put on the wall.
                 </p>
                 <AnswerInput answer="WILLING" onUnlock={() => onUnlock('002')} />
               </div>
             </div>
           )}
-          {/* FILE 002 placeholder */}
+          {/* FILE 002 */}
           {fileId === '002' && (
             <div className="flex flex-col gap-5">
 
@@ -474,7 +654,7 @@ function FileViewer({
                 fontStyle: 'italic',
                 lineHeight: 1.6,
               }}>
-                Document recovered in partial condition. Water damage sustained during 1971 transfer. Sections marked ██ are unrecoverable. Entries marked Ω require separate clearance.
+                Document recovered in partial condition. Water damage sustained during 1971 transfer. Sections marked ██ are unrecoverable. Entries marked Ω require separate clearance. Cross-reference: Meridian Institute filing ref. MI-1978-KVL
               </p>
 
               {/* Non-omega entries*/}
@@ -590,7 +770,7 @@ function FileViewer({
                   Analyst Input
                 </p>
                 <p style={{ color: '#2A2520', fontSize: '0.75rem', lineHeight: '1.8', fontFamily: 'var(--font-body)' }}>
-                  The Ω entries are not random. Some letters are harder to read than others,that is not an accident.
+                  CLUE: The Ω entries are not random. Some letters are harder to read than others,that is not an accident.
                 </p>
                 <AnswerInput answer="PARISH" onUnlock={() => onUnlock('003')} />
               </div>
@@ -773,118 +953,16 @@ function FileViewer({
                   Analyst Input
                 </p>
                 <p style={{ color: '#2A2520', fontSize: '0.75rem', lineHeight: '1.8', fontFamily: 'var(--font-body)' }}>
-                  Language can be a cage. Some governments understood this better than others. One author wrote about it in 1949. If the words in this document feel wrong, and some of them do, perhaps that is because they were written in a language designed to make wrong seem right. Look at what doesn't fit in. Collect it in order.
+                  CLUE: Language can be a cage. Some governments understood this better than others. One author wrote about it in 1949. If the words in this document feel wrong, and some of them do, perhaps that is because they were written in a language designed to make wrong seem right. Look at what doesn't fit in. Collect it in order.
                 </p>
                 <AnswerInput answer="CORMORANT" onUnlock={() => onUnlock('004')} />
               </div>
 
             </div>
           )}
-
           {fileId === '004' && (
-            <div className="flex flex-col gap-5">
-
-              {/* Letterhead */}
-              <div className="flex flex-col gap-1 border-b border-black/15 pb-4">
-                <p style={{ color: '#7A1616', fontSize: '0.55rem', letterSpacing: '0.5em', fontFamily: 'var(--font-body)', textTransform: 'uppercase' }}>
-                  BlackVault — Unclassified Submission
-                </p>
-                <p style={{ color: '#2A2520', fontSize: '0.55rem', letterSpacing: '0.3em', fontFamily: 'var(--font-body)', textTransform: 'uppercase' }}>
-                  Origin: Anonymous Upload · Received: 04:32 UTC
-                </p>
-              </div>
-
-              {/* Document header */}
-              <div className="flex items-start justify-between">
-                <div className="flex flex-col gap-1">
-                  <p style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', color: '#1A1714', letterSpacing: '0.08em' }}>
-                    Photograph — Brussels, undated
-                  </p>
-                  <p style={{ fontSize: '0.6rem', color: '#8A8070', fontFamily: 'var(--font-body)', letterSpacing: '0.2em', textTransform: 'uppercase' }}>
-                    No accompanying note. No sender identity.
-                  </p>
-                </div>
-                <div className="flex flex-col items-end gap-1">
-                  <p style={{ fontSize: '0.55rem', color: '#8A8070', fontFamily: 'var(--font-body)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
-                    File
-                  </p>
-                  <p style={{ fontFamily: 'var(--font-display)', fontSize: '0.85rem', color: '#7A1616' }}>
-                    KVL-004
-                  </p>
-                </div>
-              </div>
-
-              {/* Archival note */}
-              <p style={{
-                fontFamily: 'var(--font-hand)',
-                fontSize: '0.78rem',
-                color: '#8A8070',
-                fontStyle: 'italic',
-                lineHeight: 1.6,
-              }}>
-                This file appeared in the BlackVault upload queue forty minutes after MOTH_33's original submission. No account was used. The IP address resolved to a VPN exit node in Reykjavik. We do not know who sent this or why.
-              </p>
-
-              {/* The photograph */}
-              <div className="flex flex-col gap-2">
-                <img
-                  src="/assets/47.5017_N_4.3571_E.jpg"
-                  alt=""
-                  style={{
-                    width: '100%',
-                    filter: 'grayscale(100%) contrast(1.1) brightness(0.9)',
-                    border: '1px solid rgba(0,0,0,0.2)',
-                  }}
-                />
-                <div className="flex items-center justify-between">
-                  <p style={{
-                    fontSize: '0.55rem',
-                    color: '#8A8070',
-                    letterSpacing: '0.2em',
-                    textTransform: 'uppercase',
-                    fontFamily: 'var(--font-body)',
-                  }}>
-                    No caption. No date. No location metadata.
-                  </p>
-
-                  <a href="/public/assets/50.8410_N_4.3570_E.jpg"
-                    download="50.8410_N_4.3570_E.jpg"
-                    style={{
-                      fontSize: '0.6rem',
-                      color: '#7A1616',
-                      letterSpacing: '0.2em',
-                      textTransform: 'uppercase',
-                      fontFamily: 'var(--font-body)',
-                      textDecoration: 'none',
-                      borderBottom: '1px solid #7A1616',
-                      paddingBottom: '1px',
-                    }}>
-                    Download file
-                  </a>
-                </div>
-              </div>
-
-              {/* Hint */}
-              <div className="flex flex-col gap-3 border-t border-black/10 pt-4 mt-1">
-                <p style={{ color: '#7A1616', fontSize: '0.6rem', letterSpacing: '0.4em', fontFamily: 'var(--font-body)', textTransform: 'uppercase' }}>
-                  Analyst Note
-                </p>
-                <p style={{ color: '#2A2520', fontSize: '0.75rem', lineHeight: '1.8', fontFamily: 'var(--font-body)' }}>
-                  Someone sent this for a reason. A photograph is never just a photograph. Look at everything — what's visible, what's hidden, what the file itself carries. Files have memory even when images don't.
-                </p>
-                <p style={{ color: '#2A2520', fontSize: '0.75rem', lineHeight: '1.8', fontFamily: 'var(--font-body)' }}>
-                  If you find something encrypted, you already have the key. You earned it in Document 001.
-                </p>
-              </div>
-
-              {/* Answer input */}
-              <div className="flex flex-col gap-3 border-t border-black/10 pt-4 mt-1">
-                <AnswerInput answer="VANTAGE" onUnlock={() => onUnlock('waitlist')} />
-              </div>
-
-            </div>
+            <Document004 onUnlock={onUnlock} />
           )}
-
           <button
             onClick={() => {
               if (fileId === '000') onUnlock('001')

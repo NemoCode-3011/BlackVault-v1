@@ -98,7 +98,7 @@ export default function SignIn() {
         <p className="text-center text-bv-fog text-xs">
           No clearance yet?{' '}
           <span
-            onClick={() => navigate('/archive')}
+            onClick={() => navigate('/signup')}
             className="text-bv-gold cursor-pointer hover:underline">
             Request Access
           </span>
