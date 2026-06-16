@@ -12,6 +12,7 @@ export default function SignIn() {
   })
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [message, setMessage] = useState('')
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -23,6 +24,14 @@ export default function SignIn() {
       setLoading(false)
       navigate('/archive')
     }, 2000)
+  }
+
+  const handleForgotPassword = async () => {
+    if (!formData.email) {
+      setMessage('Enter your email address first.')
+      return
+    }
+    setMessage('If that email exists in our system, a reset link has been sent.')
   }
 
   return (
@@ -103,6 +112,17 @@ export default function SignIn() {
             Request Access
           </span>
         </p>
+        <button
+          onClick={handleForgotPassword}
+          className="text-bv-fog text-[0.6rem] tracking-[0.3em] uppercase hover:text-bv-ash transition-colors duration-200 cursor-pointer self-center mt-2"
+        >
+          Forgot password?
+        </button>
+        {message && (
+          <p className="text-bv-olive text-[0.65rem] tracking-[0.2em] text-center mt-2">
+            {message}
+          </p>
+        )}
       </motion.div>
     </div>
   )
