@@ -1,9 +1,12 @@
-import { useState } from 'react'
-import { LayoutDashboard, FolderLock, Mail, Users, Settings, ChevronLeft, ChevronRight} from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { LayoutDashboard, FolderLock, Mail, Users, Settings, ChevronLeft, ChevronRight } from 'lucide-react'
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
 import { motion } from 'framer-motion'
 import { Trash2 } from 'lucide-react';
 import bvLogo from '../../assets/bv-logo.png'
+import { supabase } from '../../lib/supabase'
+import { useNavigate } from 'react-router-dom'
+import { signOut } from '../../lib/auth'
 
 const navItems = [
   { icon: LayoutDashboard, label: 'Overview' },
@@ -12,23 +15,7 @@ const navItems = [
   { icon: Users, label: 'Agents' },
   { icon: Settings, label: 'Settings' },
 ]
-const signupData = [
-  { day: 'Day 1', agents: 2 },
-  { day: 'Day 2', agents: 5 },
-  { day: 'Day 3', agents: 3 },
-  { day: 'Day 4', agents: 8 },
-  { day: 'Day 5', agents: 12 },
-  { day: 'Day 6', agents: 7 },
-  { day: 'Day 7', agents: 15 },
-]
 
-const fileData = [
-  { file: 'File 001', opens: 24 },
-  { file: 'File 002', opens: 18 },
-  { file: 'File 003', opens: 9 },
-  { file: 'File 004', opens: 4 },
-  { file: 'File 005', opens: 1 },
-]
 
 const customTooltipStyle = {
   backgroundColor: '#1A1714',
@@ -56,21 +43,11 @@ const emptyFile = {
   dependencies: '',
 }
 
-const activity = [
-  { agent: 'Pale Fox', action: 'Opened File 001', time: '2m ago' },
-  { agent: 'Burnt Sage', action: 'Submitted solution for File 001', time: '5m ago' },
-  { agent: 'Hollow Raven', action: 'Joined the archive', time: '12m ago' },
-  { agent: 'Cold Wren', action: 'Opened File 002', time: '18m ago' },
-  { agent: 'Stray Moth', action: 'Submitted incorrect solution', time: '24m ago' },
-]
-
-  
 
 export default function Custodian() {
   const [collapsed, setCollapsed] = useState(false)
   const [activeNav, setActiveNav] = useState('Overview')
-
-
+  const navigate = useNavigate()
 
   return (
     <div className="min-h-screen bg-bv-void flex">
@@ -78,9 +55,9 @@ export default function Custodian() {
       <div className={`relative flex flex-col h-auto border-r border-bv-dust bg-bv-vault transition-all duration-300 ${collapsed ? 'w-16' : 'w-56'}`}>
         {/* Logo */}
         <div className="flex items-center gap-3 px-4 py-6 border-b border-bv-dust relative">
-          <img src={bvLogo} alt="" className= "w-10 h-10 object-contain" />
+          <img src={bvLogo} alt="" className="w-10 h-10 object-contain" />
           {!collapsed && (
-            <p className="text-bv-ash text-xs tracking-[0.3em] uppercase whitespace-nowrap" style={{ fontFamily: 'var(--font-body)'}}>
+            <p className="text-bv-ash text-xs tracking-[0.3em] uppercase whitespace-nowrap" style={{ fontFamily: 'var(--font-body)' }}>
               BlackVault
             </p>
           )}
@@ -105,9 +82,21 @@ export default function Custodian() {
 
         {/* Custodian label */}
         {!collapsed && (
-          <div className="px-4 py-4 border-t border-bv-dust">
-            <p className="text-bv-fog text-[0.6rem] tracking-[0.3em] uppercase">Logged in as</p>
-            <p className="text-bv-gold text-xs tracking-widest mt-1">The Custodian</p>
+          <div className="px-4 py-4 border-t border-bv-dust flex flex-col gap-3">
+            <div>
+              <p className="text-bv-fog text-[0.6rem] tracking-[0.3em] uppercase">Logged in as</p>
+              <p className="text-bv-gold text-xs tracking-widest mt-1">The Custodian</p>
+            </div>
+            <button
+              onClick={async () => {
+                sessionStorage.removeItem('custodian_verified')
+                await signOut()
+                navigate('/custodian-login')
+              }}
+              className="text-bv-fog text-[0.6rem] tracking-[0.25em] uppercase hover:text-bv-blood transition-colors duration-200 cursor-pointer self-start"
+            >
+              Sign Out
+            </button>
           </div>
         )}
 
@@ -158,18 +147,120 @@ export default function Custodian() {
 }
 
 function OverviewPanel() {
-  const stats = [
-    { label: 'Total Agents', value: '47' },
-    { label: 'Active Now', value: '12' },
-    { label: 'Files Unlocked', value: '3' },
-    { label: 'Messages Sent', value: '8' },
+  const [stats, setStats] = useState({
+    totalAgents: 0,
+    soloAgents: 0,
+    filesUnlocked: 0,
+    messagesSent: 0,
+  })
+  const [signupData, setSignupData] = useState<{ day: string; agents: number }[]>([])
+  const [fileData, setFileData] = useState<{ file: string; opens: number }[]>([])
+  const [activity, setActivity] = useState<{ agent: string; action: string; time: string }[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchOverview() {
+      const { count: totalAgents } = await supabase
+        .from('profiles')
+        .select('*', { count: 'exact', head: true })
+
+      const { count: soloAgents } = await supabase
+        .from('profiles')
+        .select('*', { count: 'exact', head: true })
+        .eq('solo', true)
+
+      const { count: filesUnlocked } = await supabase
+        .from('file_progress')
+        .select('*', { count: 'exact', head: true })
+
+      const { count: messagesSent } = await supabase
+        .from('transmissions')
+        .select('*', { count: 'exact', head: true })
+
+      setStats({
+        totalAgents: totalAgents ?? 0,
+        soloAgents: soloAgents ?? 0,
+        filesUnlocked: filesUnlocked ?? 0,
+        messagesSent: messagesSent ?? 0,
+      })
+
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('created_at')
+        .order('created_at', { ascending: true })
+
+      if (profiles) {
+        const grouped: Record<string, number> = {}
+        profiles.forEach(p => {
+          const day = new Date(p.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })
+          grouped[day] = (grouped[day] || 0) + 1
+        })
+        setSignupData(Object.entries(grouped).map(([day, agents]) => ({ day, agents })))
+      }
+
+      const { data: progress } = await supabase
+        .from('file_progress')
+        .select('file_id')
+
+      if (progress) {
+        const grouped: Record<string, number> = {}
+        progress.forEach(p => {
+          grouped[p.file_id] = (grouped[p.file_id] || 0) + 1
+        })
+        setFileData(
+          Object.entries(grouped)
+            .map(([file, opens]) => ({ file: `File ${file}`, opens }))
+            .sort((a, b) => a.file.localeCompare(b.file))
+        )
+      }
+
+      const { data: recentProgress } = await supabase
+        .from('file_progress')
+        .select('file_id, unlocked_at, user_id')
+        .order('unlocked_at', { ascending: false })
+        .limit(5)
+
+      if (recentProgress) {
+        const userIds = recentProgress.map(r => r.user_id)
+        const { data: profileNames } = await supabase
+          .from('profiles')
+          .select('id, codename')
+          .in('id', userIds)
+
+        const nameMap: Record<string, string> = {}
+        profileNames?.forEach(p => { nameMap[p.id] = p.codename })
+
+        setActivity(
+          recentProgress.map(r => ({
+            agent: nameMap[r.user_id] || 'Unknown',
+            action: `Unlocked File ${r.file_id}`,
+            time: new Date(r.unlocked_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }),
+          }))
+        )
+      }
+
+      setLoading(false)
+    }
+
+    fetchOverview()
+  }, [])
+
+  const statCards = [
+    { label: 'Total Agents', value: stats.totalAgents },
+    { label: 'Lone Wolves', value: stats.soloAgents },
+    { label: 'Files Unlocked', value: stats.filesUnlocked },
+    { label: 'Messages Sent', value: stats.messagesSent },
   ]
+
+  if (loading) {
+    return <p className="text-bv-fog text-xs tracking-[0.3em] uppercase">Loading overview...</p>
+  }
 
   return (
     <div className="flex flex-col gap-6 overflow-y-auto">
       {/* Stat cards */}
       <div className="grid grid-cols-4 gap-4">
-        {stats.map(({ label, value }) => (
+        {statCards.map(({ label, value }) => (
           <div key={label} className="bg-bv-vault border rounded-md shadow-xs shadow-bv-fog border-bv-dust p-5 flex flex-col gap-2">
             <p className="text-bv-fog text-[0.65rem] tracking-[0.3em] uppercase">{label}</p>
             <p className="text-bv-ash text-3xl" style={{ fontFamily: 'var(--font-display)' }}>
@@ -178,6 +269,7 @@ function OverviewPanel() {
           </div>
         ))}
       </div>
+
       {/* Charts */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -189,80 +281,62 @@ function OverviewPanel() {
             <p className="text-bv-fog text-[0.65rem] tracking-[0.3em] uppercase">
               Agent Signups
             </p>
-            <ResponsiveContainer width="100%" height={180}>
-              <LineChart data={signupData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#3D3B2F" />
-                <XAxis
-                  dataKey="day"
-                  tick={{ fill: '#8A8070', fontSize: 10 }}
-                  axisLine={{ stroke: '#3D3B2F' }}
-                  tickLine={false}
-                />
-                <YAxis
-                  tick={{ fill: '#8A8070', fontSize: 10 }}
-                  axisLine={{ stroke: '#3D3B2F' }}
-                  tickLine={false}
-                />
-                <Tooltip contentStyle={customTooltipStyle} />
-                <Line
-                  type="monotone"
-                  dataKey="agents"
-                  stroke="#D4A843"
-                  strokeWidth={1.5}
-                  dot={{ fill: '#D4A843', r: 3 }}
-                  activeDot={{ r: 5, fill: '#D4A843' }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+            {signupData.length === 0 ? (
+              <p className="text-bv-fog text-xs tracking-wide py-8 text-center">No signups yet.</p>
+            ) : (
+              <ResponsiveContainer width="100%" height={180}>
+                <LineChart data={signupData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#3D3B2F" />
+                  <XAxis dataKey="day" tick={{ fill: '#8A8070', fontSize: 10 }} axisLine={{ stroke: '#3D3B2F' }} tickLine={false} />
+                  <YAxis tick={{ fill: '#8A8070', fontSize: 10 }} axisLine={{ stroke: '#3D3B2F' }} tickLine={false} />
+                  <Tooltip contentStyle={customTooltipStyle} />
+                  <Line type="monotone" dataKey="agents" stroke="#D4A843" strokeWidth={1.5} dot={{ fill: '#D4A843', r: 3 }} activeDot={{ r: 5, fill: '#D4A843' }} />
+                </LineChart>
+              </ResponsiveContainer>
+            )}
           </div>
+
           {/* File activity bar chart */}
           <div className="bg-bv-vault border border-bv-dust p-5 flex flex-col gap-4">
             <p className="text-bv-fog text-[0.65rem] tracking-[0.3em] uppercase">
               File Activity
             </p>
-            <ResponsiveContainer width="100%" height={180}>
-              <BarChart data={fileData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#3D3B2F" />
-                <XAxis
-                  dataKey="file"
-                  tick={{ fill: '#8A8070', fontSize: 10 }}
-                  axisLine={{ stroke: '#3D3B2F' }}
-                  tickLine={false}
-                />
-                <YAxis
-                  tick={{ fill: '#8A8070', fontSize: 10 }}
-                  axisLine={{ stroke: '#3D3B2F' }}
-                  tickLine={false}
-                />
-                <Tooltip contentStyle={customTooltipStyle} />
-                <Bar dataKey="opens" fill="#AD0217" radius={[2, 2, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            {fileData.length === 0 ? (
+              <p className="text-bv-fog text-xs tracking-wide py-8 text-center">No file activity yet.</p>
+            ) : (
+              <ResponsiveContainer width="100%" height={180}>
+                <BarChart data={fileData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#3D3B2F" />
+                  <XAxis dataKey="file" tick={{ fill: '#8A8070', fontSize: 10 }} axisLine={{ stroke: '#3D3B2F' }} tickLine={false} />
+                  <YAxis tick={{ fill: '#8A8070', fontSize: 10 }} axisLine={{ stroke: '#3D3B2F' }} tickLine={false} />
+                  <Tooltip contentStyle={customTooltipStyle} />
+                  <Bar dataKey="opens" fill="#AD0217" radius={[2, 2, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
           </div>
-
         </div>
       </motion.div>
+
       {/* Live activity feed */}
       <div className="bg-bv-vault border border-bv-dust p-5 flex flex-col gap-4">
-        <div className="flex items-center justify-between">
-          <p className="text-bv-fog text-[0.65rem] tracking-[0.3em] uppercase">
-            Live Activity
-          </p>
-          <div className="flex items-center gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-            <p className="text-bv-fog text-[0.6rem] tracking-[0.2em] uppercase">Live</p>
-          </div>
-        </div>
+        <p className="text-bv-fog text-[0.65rem] tracking-[0.3em] uppercase">
+          Recent Activity
+        </p>
         <div className="flex flex-col gap-2">
-          {activity.map((item, index) => (
-            <div key={index} className="flex items-center justify-between py-2.5 border-b border-bv-dust last:border-0">
-              <div className="flex items-center gap-4">
-                <p className="text-bv-gold text-xs tracking-wide">{item.agent}</p>
-                <p className="text-bv-fog text-xs tracking-wide">{item.action}</p>
+          {activity.length === 0 ? (
+            <p className="text-bv-fog text-xs tracking-wide">No activity yet.</p>
+          ) : (
+            activity.map((item, index) => (
+              <div key={index} className="flex items-center justify-between py-2.5 border-b border-bv-dust last:border-0">
+                <div className="flex items-center gap-4">
+                  <p className="text-bv-gold text-xs tracking-wide">{item.agent}</p>
+                  <p className="text-bv-fog text-xs tracking-wide">{item.action}</p>
+                </div>
+                <p className="text-bv-fog text-[0.6rem] tracking-widest">{item.time}</p>
               </div>
-              <p className="text-bv-fog text-[0.6rem] tracking-widest">{item.time}</p>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
 
@@ -489,35 +563,64 @@ function FilesPanel() {
 function InboxPanel() {
   const [messages, setMessages] = useState<{
     id: string
-    to: string
+    recipient: string
     subject: string
     body: string
-    sentAt: string
+    created_at: string
   }[]>([])
   const [composing, setComposing] = useState(false)
-  const [form, setForm] = useState({ to: 'all', subject: '', body: '' })
- 
+  const [form, setForm] = useState({ recipient: 'all', subject: '', body: '' })
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchMessages()
+  }, [])
+
+  const fetchMessages = async () => {
+    const { data, error } = await supabase
+      .from('transmissions')
+      .select('id, recipient, subject, body, created_at')
+      .order('created_at', { ascending: false })
+
+    if (!error && data) {
+      setMessages(data)
+    }
+    setLoading(false)
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!form.subject || !form.body) return
-    setMessages([...messages, {
-      id: crypto.randomUUID(),
-      ...form,
-      sentAt: new Date().toLocaleDateString('en-GB', {
-        day: '2-digit', month: 'short', year: 'numeric'
+
+    const { error } = await supabase
+      .from('transmissions')
+      .insert({
+        recipient: form.recipient,
+        subject: form.subject,
+        body: form.body,
+        sent_by: 'Custodian',
       })
-    }])
-    setForm({ to: 'all', subject: '', body: '' })
-    setComposing(false)
+
+    if (!error) {
+      setForm({ recipient: 'all', subject: '', body: '' })
+      setComposing(false)
+      fetchMessages()
+    }
   }
 
-  const handleDelete = (id: string) => {
-  setMessages(messages.filter(msg => msg.id !== id))
-}
+  const handleDelete = async (id: string) => {
+    const { error } = await supabase
+      .from('transmissions')
+      .delete()
+      .eq('id', id)
+
+    if (!error) {
+      setMessages(messages.filter(msg => msg.id !== id))
+    }
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -554,8 +657,8 @@ function InboxPanel() {
             <div className="flex flex-col gap-2">
               <label className="text-bv-fog text-[0.6rem] tracking-[0.3em] uppercase">Recipient</label>
               <select
-                name="to"
-                value={form.to}
+                name="recipient"
+                value={form.recipient}
                 onChange={handleChange}
                 className="bg-bv-void border border-bv-dust text-bv-ash text-sm px-3 py-2.5 outline-none focus:border-bv-gold transition-colors duration-200 cursor-pointer"
               >
@@ -565,7 +668,6 @@ function InboxPanel() {
                 <option value="Cryptanalyst">Cryptanalysts</option>
                 <option value="Spotter">Spotters</option>
                 <option value="Defector">Defectors</option>
-                <option value="lone-wolf">Lone Wolves</option>
               </select>
             </div>
             <div className="flex flex-col gap-2">
@@ -602,40 +704,66 @@ function InboxPanel() {
       )}
 
       {/* Sent messages */}
-      <div className="flex flex-col gap-2">
-        {messages.length === 0 ? (
-          <div className="bg-bv-vault border border-bv-dust p-8 flex items-center justify-center">
-            <p className="text-bv-fog text-xs tracking-[0.4em] uppercase">No transmissions sent yet.</p>
-          </div>
-        ) : (
-          messages.map((msg, index) => (
-            <div key={index} className="bg-bv-vault border border-bv-dust px-5 py-4 flex items-center justify-between">
-              <div className="flex items-center gap-6">
-                <p className="text-bv-blood text-[0.65rem] tracking-[0.3em] uppercase">{msg.to}</p>
-                <p className="text-bv-ash text-sm tracking-wide">{msg.subject}</p>
-              </div>
-              <div className='flex gap-5'>
-                <p className="text-bv-fog text-[0.6rem] tracking-widest">{msg.sentAt}</p>
-               <button 
-               onClick={()=> handleDelete(msg.id)}
-               className='text-bv-blood text-[0.6rem] tracking-widest'><Trash2 size={15}/></button>
-              </div>
+      {loading ? (
+        <p className="text-bv-fog text-xs tracking-[0.3em] uppercase">Loading transmissions...</p>
+      ) : (
+        <div className="flex flex-col gap-2">
+          {messages.length === 0 ? (
+            <div className="bg-bv-vault border border-bv-dust p-8 flex items-center justify-center">
+              <p className="text-bv-fog text-xs tracking-[0.4em] uppercase">No transmissions sent yet.</p>
             </div>
-          ))
-        )}
-      </div>
+          ) : (
+            messages.map((msg) => (
+              <div key={msg.id} className="bg-bv-vault border border-bv-dust px-5 py-4 flex items-center justify-between">
+                <div className="flex items-center gap-6">
+                  <p className="text-bv-blood text-[0.65rem] tracking-[0.3em] uppercase">{msg.recipient}</p>
+                  <p className="text-bv-ash text-sm tracking-wide">{msg.subject}</p>
+                </div>
+                <div className="flex gap-5">
+                  <p className="text-bv-fog text-[0.6rem] tracking-widest">
+                    {new Date(msg.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                  </p>
+                  <button
+                    onClick={() => handleDelete(msg.id)}
+                    className="text-bv-blood text-[0.6rem] tracking-widest cursor-pointer"
+                  >
+                    <Trash2 size={15} />
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      )}
     </div>
   )
 }
 
 function AgentsPanel() {
-  const dummyAgents = [
-    { codename: 'Pale Fox', role: 'Cryptanalyst', clearance: 'Operative', lastActive: '2m ago', solo: false },
-    { codename: 'Burnt Sage', role: 'Spotter', clearance: 'Recruit', lastActive: '5m ago', solo: false },
-    { codename: 'Cold Wren', role: 'Mole', clearance: 'Recruit', lastActive: '11m ago', solo: true },
-    { codename: 'Dim Raven', role: 'Defector', clearance: 'Field Agent', lastActive: '18m ago', solo: false },
-    { codename: 'Stray Moth', role: 'Intelligence Officer', clearance: 'Recruit', lastActive: '24m ago', solo: true },
-  ]
+  const [agents, setAgents] = useState<{
+    codename: string
+    role: string
+    rank: string
+    solo: boolean
+    created_at: string
+  }[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchAgents() {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('codename, role, rank, solo, created_at')
+        .order('created_at', { ascending: false })
+
+      if (!error && data) {
+        setAgents(data)
+      }
+      setLoading(false)
+    }
+
+    fetchAgents()
+  }, [])
 
   return (
     <div className="flex flex-col gap-6">
@@ -649,32 +777,41 @@ function AgentsPanel() {
 
       {/* Table header */}
       <div className="grid grid-cols-5 px-5 py-2 border-b border-bv-dust">
-        {['Codename', 'Role', 'Clearance', 'Track', 'Last Active'].map(h => (
+        {['Codename', 'Role', 'Rank', 'Track', 'Joined'].map(h => (
           <p key={h} className="text-bv-fog text-[0.6rem] tracking-[0.3em] uppercase">{h}</p>
         ))}
       </div>
 
       {/* Agent rows */}
-      <div className="flex flex-col gap-1">
-        {dummyAgents.map((agent, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3, delay: index * 0.08 }}
-            className="grid grid-cols-5 px-5 py-3 bg-bv-vault border border-bv-dust hover:border-bv-fog transition-colors duration-200"
-          >
-            <p className="text-bv-gold text-xs tracking-widest">{agent.codename}</p>
-            <p className="text-bv-ash text-xs tracking-wide">{agent.role}</p>
-            <p className="text-bv-fog text-xs tracking-wide">{agent.clearance}</p>
-            <p className={`text-xs tracking-wide ${agent.solo ? 'text-bv-blood' : 'text-bv-fog'}`}>
-              {agent.solo ? 'Lone Wolf' : 'Team'}
-            </p>
-            <p className="text-bv-fog text-xs tracking-widest">{agent.lastActive}</p>
-          </motion.div>
-        ))}
-      </div>
-
+      {loading ? (
+        <p className="text-bv-fog text-xs tracking-[0.3em] uppercase">Loading agents...</p>
+      ) : agents.length === 0 ? (
+        <div className="bg-bv-vault border border-bv-dust p-8 flex items-center justify-center">
+          <p className="text-bv-fog text-xs tracking-[0.4em] uppercase">No agents have signed up yet.</p>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-1">
+          {agents.map((agent, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3, delay: index * 0.05 }}
+              className="grid grid-cols-5 px-5 py-3 bg-bv-vault border border-bv-dust hover:border-bv-fog transition-colors duration-200"
+            >
+              <p className="text-bv-gold text-xs tracking-widest">{agent.codename}</p>
+              <p className="text-bv-ash text-xs tracking-wide">{agent.role}</p>
+              <p className="text-bv-fog text-xs tracking-wide">{agent.rank}</p>
+              <p className={`text-xs tracking-wide ${agent.solo ? 'text-bv-blood' : 'text-bv-fog'}`}>
+                {agent.solo ? 'Lone Wolf' : 'Team'}
+              </p>
+              <p className="text-bv-fog text-xs tracking-widest">
+                {new Date(agent.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

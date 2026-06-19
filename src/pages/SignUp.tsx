@@ -2,6 +2,21 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Eye, EyeOff, Loader } from 'lucide-react'
+import { supabase } from '../lib/supabase'
+
+const firstWords = ['Rusty', 'Pale', 'Hollow', 'Burnt', 'Stray', 'Broken', 'Silent', 'Faded', 'Cold', 'Cracked', 'Dim', 'Worn', 'Lost', 'Odd', 'Bare', 'Dusty', 'Slack', 'Grey', 'Blunt', 'Tangled']
+const secondWords = ['Owl', 'Fox', 'Sparrow', 'Sage', 'Echo', 'Raven', 'Moth', 'Pike', 'Finch', 'Wren', 'Hound', 'Lark', 'Crane', 'Veil', 'Gate', 'Drift', 'Shade', 'Flint', 'Reed', 'Thorn']
+const roles = ['Intelligence Officer', 'Mole', 'Cryptanalyst', 'Spotter', 'Defector']
+
+function generateCodename() {
+  const first = firstWords[Math.floor(Math.random() * firstWords.length)]
+  const second = secondWords[Math.floor(Math.random() * secondWords.length)]
+  return `${first} ${second}`
+}
+
+function assignRole() {
+  return roles[Math.floor(Math.random() * roles.length)]
+}
 
 export default function SignUp() {
   const navigate = useNavigate()
@@ -12,23 +27,80 @@ export default function SignUp() {
   })
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [isSolo, setIsSolo] = useState(false)
+  const [error, setError] = useState('')
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    setError('')
+
+    if (!formData.fullName || !formData.email || !formData.password) {
+      setError('All fields are required.')
+      return
+    }
+
+    if (formData.password.length < 8) {
+      setError('Password must be at least 8 characters.')
+      return
+    }
+
     setLoading(true)
-    setTimeout(() => {
+
+    try {
+      const codename = generateCodename()
+      const role = assignRole()
+
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            full_name: formData.fullName,
+          }
+        }
+      })
+
+      if (signUpError) {
+        setError(signUpError.message)
+        setLoading(false)
+        return
+      }
+
+      if (data.user) {
+        // Trigger already created the row — update it with real data
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .update({
+            codename,
+            role,
+            rank: 'Recruit',
+            solo: isSolo,
+          })
+          .eq('id', data.user.id)
+
+        if (profileError) {
+          console.error(profileError)
+          setError('Profile creation failed. Try again.')
+          setLoading(false)
+          return
+        }
+
+        navigate('/role', {
+          state: { codename, role, solo: isSolo }
+        })
+      }
+
+    } catch {
+      setError('Something went wrong. Try again.')
       setLoading(false)
-      navigate('/role')
-    }, 2000)
+    }
   }
-  const [isSolo, setIsSolo] = useState(false)
 
   return (
-    <div className="min-h-screen bg-bv-void flex items-center justify-center px-6">
-
+    <div className="min-h-screen bg-bv-void flex items-center justify-center px-6 overflow-y-scroll">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -50,8 +122,7 @@ export default function SignUp() {
         </div>
 
         {/* Form */}
-        <div className="flex flex-col gap-5">
-
+        <div className="flex flex-col gap-5 ">
           {/* Full Name */}
           <div className="flex flex-col gap-2">
             <label className="text-bv-fog text-[0.65rem] tracking-[0.3em] uppercase">
@@ -104,19 +175,24 @@ export default function SignUp() {
               </span>
             </div>
           </div>
-
         </div>
-
-        {/* Solo leveling toggle */}
+        {/* Solo toggle */}
         <div
           onClick={() => setIsSolo(!isSolo)}
-          className="flex items-center gap-3 cursor-pointer group">
+          className="flex items-center gap-3 cursor-pointer group"
+        >
           <div className={`w-4 h-4 border ${isSolo ? 'bg-bv-gold border-bv-gold' : 'border-bv-dust'} transition-colors duration-300`} />
           <p className="text-bv-fog text-xs tracking-wide group-hover:text-bv-ash transition-colors duration-300">
             I work alone. Activate Lone Wolf track.
           </p>
         </div>
 
+        {/* Error */}
+        {error && (
+          <p className="text-bv-blood text-[0.65rem] tracking-[0.2em] text-center">
+            {error}
+          </p>
+        )}
         {/* Submit */}
         <button
           onClick={handleSubmit}
@@ -130,7 +206,6 @@ export default function SignUp() {
             </>
           ) : 'Submit for Clearance'}
         </button>
-
         {/* Redirect */}
         <p className="text-center text-bv-fog text-xs">
           Already have clearance?{' '}
@@ -141,7 +216,6 @@ export default function SignUp() {
             Sign In
           </span>
         </p>
-
       </motion.div>
     </div>
   )

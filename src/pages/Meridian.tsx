@@ -62,9 +62,9 @@ export default function Meridian() {
       </nav>
 
       <div
-        className="relative min-h-screen flex items-center bg-cover  bg-no-repeat"
+        className="relative min-h-screen flex items-center bg-cover bg-no-repeat"
         style={{
-          backgroundImage: "url('/assets/50.8410_N_4.3570_E.jpg')",
+          backgroundImage: "url('/src/public/assets/50.8410_N_4.3570_E.jpg')"
         }}
       >
         {/* Overlay */}

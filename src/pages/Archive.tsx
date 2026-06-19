@@ -3,13 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { gsap } from 'gsap'
 import bvStamp from '../assets/blackvault-stamp.png'
 import bvLogo from '../assets/bv-logo.png'
-
-const agent = {
-  codename: 'Pale Fox',
-  role: 'Spotter',
-  rank: 'Recruit',
-}
-
+import { supabase } from '../lib/supabase'
+import { useNavigate } from 'react-router-dom'
+import { signOut } from '../lib/auth'
 // --- Puzzle ---
 function AnswerInput({ answer, onUnlock }: { answer: string; onUnlock: () => void }) {
   const [input, setInput] = useState('')
@@ -150,7 +146,7 @@ function Document004({ onUnlock }: { onUnlock: (id: string) => void }) {
       {/* The photograph */}
       <div className="flex flex-col gap-2">
         <img
-          src="/assets/50.8410_N_4.3570_E.jpg"
+          src="/src/public/assets/50.8410_N_4.3570_E.jpg"
           alt=""
           style={{
             width: '100%',
@@ -1153,19 +1149,92 @@ function DocumentCard({
 
 // --- Archive ---
 export default function Archive() {
+  const navigate = useNavigate()
   const [activeFile, setActiveFile] = useState<string | null>(null)
-  const [transmission] = useState(false)
+  const [transmission, setTransmission] = useState(false)
+  const [showTransmissions, setShowTransmissions] = useState(false)
+  const [agentTransmissions, setAgentTransmissions] = useState<{ id: string; subject: string; body: string; created_at: string }[]>([])
   const [unlockedFiles, setUnlockedFiles] = useState<string[]>(['000'])
   const [letterRead, setLetterRead] = useState(false)
+  const [agent, setAgent] = useState<{ codename: string; role: string; rank: string } | null>(null)
+  const [loadingAgent, setLoadingAgent] = useState(true)
 
-  const handleUnlock = (id: string) => {
-    if (id === 'waitlist') {
-      window.location.href = '/waitlist'
-      return
+  useEffect(() => {
+    let loaded = false // guard against duplicate calls
+
+    async function loadAgentData(userId: string) {
+      if (loaded) return
+      loaded = true
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('codename, role, rank')
+        .eq('id', userId)
+        .maybeSingle()
+
+      if (!profile) {
+        navigate('/signin')
+        return
+      }
+
+      setAgent(profile)
+
+      const { data: transmissions } = await supabase
+        .from('transmissions')
+        .select('id, subject, body, created_at, recipient')
+        .or(`recipient.eq.all,recipient.eq.${profile.role},recipient.eq.${profile.codename}`)
+        .order('created_at', { ascending: false })
+
+      if (transmissions && transmissions.length > 0) {
+        setTransmission(true)
+        setAgentTransmissions(transmissions)
+      }
+
+      const { data: progress } = await supabase
+        .from('file_progress')
+        .select('file_id')
+        .eq('user_id', userId)
+
+      if (progress && progress.length > 0) {
+        const unlockedIds = progress.map(p => p.file_id)
+        setUnlockedFiles(prev => [...new Set([...prev, ...unlockedIds])])
+        if (unlockedIds.includes('001')) setLetterRead(true)
+      }
+
+      setLoadingAgent(false)
     }
-    setUnlockedFiles(prev => prev.includes(id) ? prev : [...prev, id])
-  }
 
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'INITIAL_SESSION') {
+        if (session?.user) {
+          loadAgentData(session.user.id)
+        } else {
+          // No session on initial load — redirect
+          navigate('/signin')
+        }
+      } else if (event === 'SIGNED_OUT') {
+        navigate('/signin')
+      }
+      // Ignore TOKEN_REFRESHED, SIGNED_IN re-fires, etc.
+    })
+
+    return () => subscription.unsubscribe()
+  }, [navigate])
+  const handleUnlock = async (id: string) => {
+    if (id === 'waitlist') { navigate('/waitlist'); return }
+    if (unlockedFiles.includes(id)) return
+
+    setUnlockedFiles(prev => [...prev, id])
+
+    // Reuse the session you already have — don't call getSession again
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) return
+
+    await supabase.from('file_progress').insert({
+      user_id: session.user.id,
+      file_id: id,
+    })
+  }
   const isUnlocked = (id: string) => unlockedFiles.includes(id)
 
   const docStatus = (id: string, corrupted = false): DocStatus => {
@@ -1174,6 +1243,15 @@ export default function Archive() {
     return 'available'
   }
 
+  if (loadingAgent || !agent) {
+    return (
+      <div className="min-h-screen bg-bv-void flex items-center justify-center">
+        <p className="text-bv-fog text-xs tracking-[0.4em] uppercase animate-pulse">
+          Accessing clearance records...
+        </p>
+      </div>
+    )
+  }
   return (
     <div
       className="min-h-screen bg-bv-void text-bv-ash flex flex-col"
@@ -1195,32 +1273,50 @@ export default function Archive() {
         </defs>
       </svg>
       {/* Top bar */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-bv-dust">
-        <div className="flex items-center gap-3">
-          <img src={bvLogo} alt="BlackVault" className="w-8 h-8 object-contain opacity-90" />
-          <p className="text-bv-ash text-xs tracking-[0.35em] uppercase" style={{ fontFamily: 'var(--font-display)' }}>
+      <div className="flex flex-wrap items-center justify-between gap-y-3 px-4 py-3 md:px-6 md:py-4 border-b border-bv-dust">
+        <div className="flex items-center gap-2">
+          <img src={bvLogo} alt="BlackVault" className="w-6 h-6 md:w-8 md:h-8 object-contain opacity-90" />
+          <p className="text-bv-ash text-[0.6rem] md:text-xs tracking-[0.25em] md:tracking-[0.35em] uppercase" style={{ fontFamily: 'var(--font-display)' }}>
             BlackVault
           </p>
         </div>
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2">
-            <p className="text-bv-fog text-[0.6rem] tracking-[0.25em] uppercase">
+
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 md:gap-6">
+          <div className="flex items-center gap-1.5">
+            <p className="text-bv-fog text-[0.5rem] md:text-[0.6rem] tracking-[0.2em] uppercase">
               Codename
             </p>
-            <p className="text-bv-gold text-[0.65rem] tracking-widest" style={{ fontFamily: 'var(--font-display)' }}>
+            <p className="text-bv-gold text-[0.55rem] md:text-[0.65rem] tracking-wide" style={{ fontFamily: 'var(--font-display)' }}>
               {agent.codename}
             </p>
           </div>
-          <div className="w-px h-4 bg-bv-dust" />
-          <div className="flex items-center gap-2">
-            <p className="text-bv-fog text-[0.6rem] tracking-[0.25em] uppercase">Role</p>
-            <p className="text-bv-ash text-[0.65rem] tracking-widest">{agent.role}</p>
+
+          <div className="hidden sm:block w-px h-4 bg-bv-dust" />
+
+          <div className="flex items-center gap-1.5">
+            <p className="text-bv-fog text-[0.5rem] md:text-[0.6rem] tracking-[0.2em] uppercase">Role</p>
+            <p className="text-bv-ash text-[0.55rem] md:text-[0.65rem] tracking-wide">{agent.role}</p>
           </div>
-          <div className="w-px h-4 bg-bv-dust" />
-          <div className="flex items-center gap-2">
+
+          <div className="hidden sm:block w-px h-4 bg-bv-dust" />
+
+          <div className="hidden sm:flex items-center gap-1.5">
             <div className="w-1.5 h-1.5 rounded-full bg-bv-olive" />
-            <p className="text-bv-olive text-[0.6rem] tracking-[0.25em] uppercase">Clearance Active</p>
+            <p className="text-bv-olive text-[0.5rem] md:text-[0.6rem] tracking-[0.2em] uppercase">Active</p>
           </div>
+
+          <div className="hidden sm:block w-px h-4 bg-bv-dust" />
+
+          <button
+            onClick={async () => {
+              sessionStorage.removeItem('custodian_verified')
+              await signOut()
+              navigate('/signin')
+            }}
+            className="text-bv-fog text-[0.5rem] md:text-[0.6rem] tracking-[0.2em] uppercase hover:text-bv-blood transition-colors duration-200 cursor-pointer"
+          >
+            Sign Out
+          </button>
         </div>
       </div>
 
@@ -1392,7 +1488,7 @@ export default function Archive() {
 
                 {/* Document grid */}
                 <div
-                  className="grid grid-cols-2 gap-x-6 gap-y-8 relative z-10 max-w-2xl"
+                  className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-8 relative z-10 max-w-2xl"
                 >
                   <DocumentCard
                     id="001"
@@ -1440,19 +1536,69 @@ export default function Archive() {
 
       {/* Transmission panel */}
       <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-40">
-        <div className="bg-bv-vault border border-bv-dust px-4 py-3 flex flex-col gap-1" style={{ minWidth: '180px' }}>
+        <button
+          onClick={() => setShowTransmissions(true)}
+          className="bg-bv-vault border border-bv-dust px-4 py-3 flex flex-col gap-1 cursor-pointer hover:border-bv-fog transition-colors duration-200 text-left"
+          style={{ minWidth: '180px' }}
+        >
           <p className="text-bv-fog text-[0.55rem] tracking-[0.4em] uppercase">Transmission Panel</p>
           <div className="flex items-center gap-2 mt-1">
             <div className={`w-1.5 h-1.5 rounded-full ${transmission ? 'bg-bv-blood animate-pulse' : 'bg-bv-dust'}`} />
             <p className={`text-[0.6rem] tracking-[0.3em] uppercase ${transmission ? 'text-bv-blood' : 'text-bv-fog'}`}>
-              {transmission ? 'Signal Detected' : 'No Active Signal'}
+              {transmission ? 'Signal Detected — Tap to view' : 'No Active Signal'}
             </p>
           </div>
-          <p className="text-bv-dust text-[0.5rem] tracking-widest mt-0.5 animate-pulse">
-            monitoring_
-          </p>
-        </div>
+        </button>
       </div>
+
+      {/* Transmission viewer */}
+      <AnimatePresence>
+        {showTransmissions && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-bv-void/95 flex items-end md:items-center justify-center z-50 px-4"
+            onClick={() => setShowTransmissions(false)}
+          >
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ duration: 0.4, ease: 'easeOut' }}
+              onClick={e => e.stopPropagation()}
+              className="w-full max-w-md bg-bv-vault border border-bv-dust max-h-[80vh] overflow-y-auto"
+            >
+              <div className="flex items-center justify-between px-5 py-4 border-b border-bv-dust">
+                <p className="text-bv-ash text-xs tracking-[0.3em] uppercase">Transmissions</p>
+                <button
+                  onClick={() => setShowTransmissions(false)}
+                  className="text-bv-fog hover:text-bv-ash text-xs cursor-pointer"
+                >
+                  Close
+                </button>
+              </div>
+              <div className="flex flex-col gap-3 p-5">
+                {agentTransmissions.length === 0 ? (
+                  <p className="text-bv-fog text-xs tracking-wide">No transmissions received.</p>
+                ) : (
+                  agentTransmissions.map(t => (
+                    <div key={t.id} className="border border-bv-dust bg-bv-void p-4 flex flex-col gap-2">
+                      <div className="flex items-center justify-between">
+                        <p className="text-bv-gold text-[0.65rem] tracking-[0.2em] uppercase">{t.subject}</p>
+                        <p className="text-bv-fog text-[0.55rem] tracking-widest">
+                          {new Date(t.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}
+                        </p>
+                      </div>
+                      <p className="text-bv-ash text-xs leading-relaxed">{t.body}</p>
+                    </div>
+                  ))
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* File viewer */}
       <AnimatePresence>

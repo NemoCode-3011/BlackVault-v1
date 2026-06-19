@@ -1,86 +1,72 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
+import { supabase } from '../lib/supabase'
 
-const firstWords = [
-  'Rusty', 'Pale', 'Hollow', 'Burnt', 'Stray', 'Broken', 'Silent',
-  'Faded', 'Cold', 'Cracked', 'Dim', 'Worn', 'Lost', 'Odd', 'Bare',
-  'Dusty', 'Slack', 'Grey', 'Blunt', 'Tangled'
-]
-
-const secondWords = [
-  'Owl', 'Fox', 'Sparrow', 'Sage', 'Echo', 'Raven', 'Moth', 'Pike',
-  'Finch', 'Wren', 'Hound', 'Lark', 'Crane', 'Veil', 'Gate', 'Drift',
-  'Shade', 'Flint', 'Reed', 'Thorn'
-]
-
-const roles = [
-  {
-    title: 'Intelligence Officer',
-    description: 'Dates. Names. Locations. Connections. While everyone else searches for answers, you build the map.',
-  },
-  {
-    title: 'Mole',
-    description: 'Sometimes a file appears in your inbox that nobody else received. Don\'t ask why. Use it before it disappears.',
-  },
-  {
-    title: 'Cryptanalyst',
-    description: 'You notice patterns others don\'t see. Encoded messages rarely stay hidden from you for long.',
-  },
-  {
-    title: 'Spotter',
-    description: ' The details everyone misses have a habit of finding you.',
-  },
-  {
-    title: 'Defector',
-    description: 'Messages arrive from VEIL. Some tell the truth. Some are designed to mislead you. The difference matters more than you think.',
-  },
-]
-
-function generateCodename() {
-  const first = firstWords[Math.floor(Math.random() * firstWords.length)]
-  const second = secondWords[Math.floor(Math.random() * secondWords.length)]
-  return `${first} ${second}`
-}
-
-function assignRole() {
-  return roles[Math.floor(Math.random() * roles.length)]
+const roleDescriptions: Record<string, string> = {
+  'Intelligence Officer': 'Dates. Names. Locations. Connections. While everyone else searches for answers, you build the map.',
+  'Mole': "Sometimes a file appears in your inbox that nobody else received. Don't ask why. Use it before it disappears.",
+  'Cryptanalyst': "You notice patterns others don't see. Encoded messages rarely stay hidden from you for long.",
+  'Spotter': 'The details everyone misses have a habit of finding you.',
+  'Defector': 'Messages arrive from VEIL. Some tell the truth. Some are designed to mislead you. The difference matters more than you think.',
 }
 
 export default function RoleReveal() {
   const navigate = useNavigate()
-  const [codename] = useState(generateCodename)
-  const [role] = useState(assignRole)
-  const [isSolo, setIsSolo] = useState(false)
+  const location = useLocation()
   const [revealed, setRevealed] = useState(false)
   const [loading, setLoading] = useState(true)
 
+  const { codename, role, solo } = location.state || {}
 
   useEffect(() => {
+    if (!codename || !role) {
+      navigate('/signup')
+      return
+    }
+
+    async function saveProfile() {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) return
+
+      const { error } = await supabase
+        .from('profiles')
+        .update({ codename, role, solo })
+        .eq('id', session.user.id)
+
+      if (error) {
+        console.error('Failed to save profile:', error)
+      }
+    }
+
+    saveProfile()
+
     const loadTimer = setTimeout(() => setLoading(false), 2500)
     const revealTimer = setTimeout(() => setRevealed(true), 2600)
+
     return () => {
       clearTimeout(loadTimer)
       clearTimeout(revealTimer)
     }
-  }, [])
+  }, [codename, role, solo, navigate])
 
   return (
     <div className="min-h-screen bg-bv-void flex items-center justify-center px-6 relative">
       <AnimatePresence>
         {loading && (
           <motion.p
-          key="loading"
+            key="loading"
             initial={{ opacity: 0 }}
             animate={{ opacity: [0, 1, 0.4, 1] }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 1.5}}
+            transition={{ duration: 1.5 }}
             className="text-bv-fog text-xs tracking-[0.4em] uppercase absolute"
           >
             Accessing personnel files...
           </motion.p>
         )}
       </AnimatePresence>
+
       <AnimatePresence>
         {revealed && (
           <motion.div
@@ -112,29 +98,26 @@ export default function RoleReveal() {
 
             {/* Role */}
             <div className="flex flex-col gap-3">
-              <div className="flex items-center justify-between">
-                <p className="text-bv-fog text-[0.65rem] tracking-[0.4em] uppercase">
-                  Role
-                </p>
-              </div>
+              <p className="text-bv-fog text-[0.65rem] tracking-[0.4em] uppercase">
+                Role
+              </p>
               <p className="text-bv-ash text-xl tracking-wide">
-                {role.title}
+                {role}
               </p>
               <p className="text-bv-fog text-xs leading-relaxed">
-                {role.description}
+                {roleDescriptions[role]}
               </p>
             </div>
 
-            {/* Solo levelling (ahah) */}
-            <div
-              onClick={() => setIsSolo(!isSolo)}
-              className="flex items-center gap-3 cursor-pointer group"
-            >
-              <div className={`w-4 h-4 border ${isSolo ? 'bg-bv-gold border-bv-gold' : 'border-bv-dust'} transition-colors duration-300`} />
-              <p className="text-bv-fog text-xs tracking-wide group-hover:text-bv-ash transition-colors duration-300">
-                I work alone. Activate Lone Wolf track.
-              </p>
-            </div>
+            {/* Solo status */}
+            {solo && (
+              <div className="flex items-center gap-3">
+                <div className="w-4 h-4 bg-bv-gold border-bv-gold border" />
+                <p className="text-bv-fog text-xs tracking-wide">
+                  Lone Wolf track activated.
+                </p>
+              </div>
+            )}
 
             {/* Proceed button */}
             <button
