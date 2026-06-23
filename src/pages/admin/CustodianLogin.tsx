@@ -72,7 +72,7 @@ export default function CustodianLogin() {
             type="email"
             value={email}
             onChange={e => setEmail(e.target.value)}
-            placeholder="email"
+            placeholder="Email"
             className="bg-bv-vault border border-bv-dust text-bv-ash text-sm px-4 py-3 outline-none focus:border-bv-gold transition-colors duration-300 placeholder:text-bv-fog"
           />
           <input
@@ -80,7 +80,7 @@ export default function CustodianLogin() {
             value={password}
             onChange={e => setPassword(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleSubmit()}
-            placeholder="password"
+            placeholder="Password"
             className="bg-bv-vault border border-bv-dust text-bv-ash text-sm px-4 py-3 outline-none focus:border-bv-gold transition-colors duration-300 placeholder:text-bv-fog"
           />
         </div>

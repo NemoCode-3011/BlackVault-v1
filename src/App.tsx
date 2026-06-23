@@ -11,6 +11,7 @@ import ProtectedRoute from './components/UI/ProtectedRoutes'
 import Waitlist from './pages/Waitlist'
 import CustodianLogin from './pages/admin/CustodianLogin'
 import CustodianRoute from './components/UI/CustodianRoutes'
+import SeasonTwoWaitlist from './pages/SeasonTwoWaitlist'
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
       <Route path="/meridian" element={<Meridian />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/waitlist" element={<Waitlist />} />
+      <Route path="/waitlist-s2" element={<SeasonTwoWaitlist />} />
 
       {/* Archive with Protected Route */}
       <Route path="/archive" element={<ProtectedRoute><Archive /></ProtectedRoute>} />

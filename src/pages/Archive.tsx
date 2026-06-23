@@ -64,29 +64,42 @@ function Document004({ onUnlock }: { onUnlock: (id: string) => void }) {
   const [stage, setStage] = useState(0)
   const [input, setInput] = useState('')
   const [status, setStatus] = useState<'idle' | 'correct' | 'wrong'>('idle')
+  const [finished, setFinished] = useState(false)
+  const [revealStage, setRevealStage] = useState(0)
+
   const stages = [
     {
-      clue: "The filename is not random. It leads to the place where it began. Find where they lead.",
+      clue: "Start with the file. Not what's in it. The file itself.",
       answer: 'BRUSSELS',
     },
     {
-      clue: "You have the key. Now find what was hidden inside the file itself. dcode.fr. Vigenère.",
+      clue: "You know where it is. Go there. Read everything. Leave no corner unread.",
       answer: 'VANTAGE',
     },
     {
-      clue: "Not everything hidden is locked away. Some things just need the right eyes. Go back to Meridian. Read what you can't see.",
+      clue: "You have what you need. You've had it for a while now. Use it.",
       answer: 'STARLINGWASCHOSEN',
     },
   ]
 
   const currentStage = stages[stage]
 
+  useEffect(() => {
+    if (!finished) return
+    const t1 = setTimeout(() => setRevealStage(1), 2500)
+    const t2 = setTimeout(() => setRevealStage(2), 5000)
+    return () => {
+      clearTimeout(t1)
+      clearTimeout(t2)
+    }
+  }, [finished])
+
   const handleSubmit = () => {
     if (input.trim().toUpperCase() === currentStage.answer.toUpperCase()) {
       setStatus('correct')
       setTimeout(() => {
         if (stage === stages.length - 1) {
-          onUnlock('waitlist')
+          setFinished(true)
         } else {
           setStage(prev => prev + 1)
           setInput('')
@@ -146,7 +159,7 @@ function Document004({ onUnlock }: { onUnlock: (id: string) => void }) {
       {/* The photograph */}
       <div className="flex flex-col gap-2">
         <img
-          src="/src/public/assets/50.8410_N_4.3570_E.jpg"
+          src="/assets/50.8410_N_4.3570_E.jpg"
           alt=""
           style={{
             width: '100%',
@@ -164,8 +177,8 @@ function Document004({ onUnlock }: { onUnlock: (id: string) => void }) {
           }}>
             No caption. No date. No location metadata.
           </p>
-          <a
-            href="/assets/50.8410_N_4.3570_E.jpg"
+          
+            < a href="/assets/50.8410_N_4.3570_E.jpg"
             download="50.8410_N_4.3570_E.jpg"
             style={{
               fontSize: '0.6rem',
@@ -183,60 +196,124 @@ function Document004({ onUnlock }: { onUnlock: (id: string) => void }) {
         </div>
       </div>
 
-      {/* Multi stage answer */}
-      <div className="flex flex-col gap-3 border-t border-black/10 pt-4 mt-1">
-        <div className="flex items-center gap-3">
-          <p style={{ color: '#7A1616', fontSize: '0.6rem', letterSpacing: '0.4em', fontFamily: 'var(--font-body)', textTransform: 'uppercase' }}>
-            Analyst Input
-          </p>
-          <p style={{ color: '#3D3B2F', fontSize: '0.6rem', letterSpacing: '0.2em', fontFamily: 'var(--font-body)' }}>
-            {stage + 1} / 3
-          </p>
-        </div>
-
-        <p style={{ color: '#2A2520', fontSize: '0.75rem', lineHeight: '1.8', fontFamily: 'var(--font-body)' }}>
-          {currentStage.clue}
-        </p>
-
-        {status === 'correct' ? (
-          <p style={{ color: '#556B57', fontSize: '0.7rem', letterSpacing: '0.3em', fontFamily: 'var(--font-body)', textTransform: 'uppercase' }}>
-            {stage === stages.length - 1 ? '✓ Access granted. Redirecting...' : '✓ Correct. Loading next layer...'}
-          </p>
-        ) : (
-          <div className="flex flex-col gap-2">
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={input}
-                onChange={e => setInput(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleSubmit()}
-                placeholder="Enter your findings..."
-                className="flex-1 px-3 py-2 outline-none"
-                style={{
-                  backgroundColor: '#C8B89A',
-                  border: '1px solid rgba(0,0,0,0.2)',
-                  color: '#1A1714',
-                  fontFamily: 'var(--font-body)',
-                  fontSize: '0.8rem',
-                  letterSpacing: '0.1em',
-                }}
-              />
-              <button
-                onClick={handleSubmit}
-                className="px-4 py-2 text-[0.65rem] tracking-[0.3em] uppercase cursor-pointer"
-                style={{ backgroundColor: '#2A2520', color: '#D8CEB8', fontFamily: 'var(--font-body)' }}
-              >
-                Submit
-              </button>
-            </div>
-            {status === 'wrong' && (
-              <p style={{ color: '#7A1616', fontSize: '0.65rem', letterSpacing: '0.2em', fontFamily: 'var(--font-body)', textTransform: 'uppercase' }}>
-                Incorrect. Keep looking.
-              </p>
-            )}
+      {!finished ? (
+        /* Multi stage answer */
+        <div className="flex flex-col gap-3 border-t border-black/10 pt-4 mt-1">
+          <div className="flex items-center gap-3">
+            <p style={{ color: '#7A1616', fontSize: '0.6rem', letterSpacing: '0.4em', fontFamily: 'var(--font-body)', textTransform: 'uppercase' }}>
+              Analyst Input
+            </p>
+            <p style={{ color: '#3D3B2F', fontSize: '0.6rem', letterSpacing: '0.2em', fontFamily: 'var(--font-body)' }}>
+              {stage + 1} / 3
+            </p>
           </div>
-        )}
-      </div>
+
+          <p style={{ color: '#2A2520', fontSize: '0.75rem', lineHeight: '1.8', fontFamily: 'var(--font-body)' }}>
+            {currentStage.clue}
+          </p>
+
+          {status === 'correct' ? (
+            <p style={{ color: '#556B57', fontSize: '0.7rem', letterSpacing: '0.3em', fontFamily: 'var(--font-body)', textTransform: 'uppercase' }}>
+              ✓ Correct. Loading next layer...
+            </p>
+          ) : (
+            <div className="flex flex-col gap-2">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={input}
+                  onChange={e => setInput(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handleSubmit()}
+                  placeholder="Enter your findings..."
+                  className="flex-1 px-3 py-2 outline-none"
+                  style={{
+                    backgroundColor: '#C8B89A',
+                    border: '1px solid rgba(0,0,0,0.2)',
+                    color: '#1A1714',
+                    fontFamily: 'var(--font-body)',
+                    fontSize: '0.8rem',
+                    letterSpacing: '0.1em',
+                  }}
+                />
+                <button
+                  onClick={handleSubmit}
+                  className="px-4 py-2 text-[0.65rem] tracking-[0.3em] uppercase cursor-pointer"
+                  style={{ backgroundColor: '#2A2520', color: '#D8CEB8', fontFamily: 'var(--font-body)' }}
+                >
+                  Submit
+                </button>
+              </div>
+              {status === 'wrong' && (
+                <p style={{ color: '#7A1616', fontSize: '0.65rem', letterSpacing: '0.2em', fontFamily: 'var(--font-body)', textTransform: 'uppercase' }}>
+                  Incorrect. Keep looking.
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+      ) : (
+        /* The decrypted message — staged reveal */
+        <div className="flex flex-col gap-4 border-t border-black/10 pt-4 mt-1">
+          <p style={{ color: '#7A1616', fontSize: '0.6rem', letterSpacing: '0.4em', fontFamily: 'var(--font-body)', textTransform: 'uppercase' }}>
+            Decrypted — Vigenère key: STARLINGWASCHOSEN
+          </p>
+
+          <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.95rem', color: '#2A2520', lineHeight: 1.85 }}>
+            I am CORMORANT. I am 84 years old. I have not spoken about this in 58 years.
+          </p>
+
+          <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.95rem', color: '#2A2520', lineHeight: 1.85 }}>
+            I put the Ω on those seven files because I believed Walsh had made an error with them. I was right about six. I was wrong about the seventh. Subject Ω was not a plant. Subject Ω was something Walsh did not design and did not predict.
+          </p>
+
+          <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.95rem', color: '#2A2520', lineHeight: 1.85 }}>
+            I have spent fifty years trying to understand how. The organisation in this photograph is still running. They have new names now. New papers. New faces. But the work continues.
+          </p>
+
+          <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.95rem', color: '#2A2520', lineHeight: 1.85 }}>
+            I believe it has happened again. Recently. I believe I know who. I have spent three weeks trying to find a way to say this safely and there isn't one, so I am simply going to write the name and hope this reaches someone before they reach
+          </p>
+
+          <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.95rem', color: '#7A1616', opacity: 0.5, letterSpacing: '0.05em' }}>
+            [ TRANSMISSION INTERRUPTED — REMAINDER CORRUPTED ]
+          </p>
+
+          {revealStage >= 1 && (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1.5 }}
+              style={{ fontFamily: 'var(--font-hand)', fontSize: '0.78rem', color: '#8A8070', fontStyle: 'italic', marginTop: '8px' }}
+            >
+              This is the last transmission BlackVault received from this source.
+            </motion.p>
+          )}
+
+          {revealStage >= 2 && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1.5 }}
+              className="flex flex-col gap-3 border-t border-black/10 pt-4 mt-2"
+            >
+              <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.85rem', color: '#7A1616', lineHeight: 1.8 }}>
+                Three minutes after this transmission was received, the Meridian Institute's public website changed its homepage. We do not know why. We are taking this archive offline as a precaution.
+              </p>
+              <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.85rem', color: '#7A1616', lineHeight: 1.8 }}>
+                This may be the last time you see this page.
+              </p>
+              <button
+                onClick={() => onUnlock('waitlist')}
+                className="self-start text-[0.65rem] tracking-[0.4em] uppercase mt-2 hover:opacity-60 transition-opacity duration-200 cursor-pointer"
+                style={{ color: '#7A1616', fontFamily: 'var(--font-body)' }}
+              >
+                Leave a way to reach you →
+              </button>
+            </motion.div>
+          )}
+        </div>
+      )}
+
     </div>
   )
 }
@@ -364,7 +441,7 @@ function FileViewer({
           {/* FILE 001 */}
           {fileId === '001' && (
             <div className="flex flex-col gap-5">
-              {/* MOTH_33 annotation — top of document */}
+              {/* MOTH_33 annotation */}
               <p style={{
                 fontFamily: 'var(--font-hand)',
                 fontSize: '0.82rem',
@@ -376,6 +453,7 @@ function FileViewer({
               }}>
                 this is what I found. — M
               </p>
+
               {/* Letterhead */}
               <div className="flex flex-col gap-2 border-b border-black/15 pb-4">
                 <p style={{ color: '#7A1616', fontSize: '0.55rem', letterSpacing: '0.5em', fontFamily: 'var(--font-body)', textTransform: 'uppercase' }}>
@@ -383,32 +461,6 @@ function FileViewer({
                 </p>
                 <p style={{ color: '#2A2520', fontSize: '0.55rem', letterSpacing: '0.3em', fontFamily: 'var(--font-body)', textTransform: 'uppercase' }}>
                   Kavala Station · Northern Greece · Est. 1958
-                </p>
-
-                {/* Frankl quote — motto of the Foundation. Seven letters marked. */}
-                <p style={{
-                  fontFamily: 'var(--font-hand)',
-                  fontSize: '0.8rem',
-                  color: '#5A5040',
-                  lineHeight: 1.7,
-                  marginTop: '6px',
-                  fontStyle: 'italic',
-                }}>
-                  "For the meaning of life differs from man to man, from day to day, and from hour to hour.{' '}
-                  <span style={{ color: '#7A1616', fontWeight: 600 }}>W</span>hat matters, therefore,{' '}
-                  <span style={{ color: '#7A1616', fontWeight: 600 }}>i</span>s not the meaning of{' '}
-                  <span style={{ color: '#7A1616', fontWeight: 600 }}>l</span>ife in genera<span style={{ color: '#7A1616', fontWeight: 600 }}>l</span>,{' '}
-                  but rather the spec<span style={{ color: '#7A1616', fontWeight: 600 }}>i</span>fic mea<span style={{ color: '#7A1616', fontWeight: 600 }}>n</span>in<span style={{ color: '#7A1616', fontWeight: 600 }}>g</span>{' '}
-                  of a person's life at a given moment."
-                </p>
-                <p style={{
-                  fontSize: '0.5rem',
-                  color: '#8A8070',
-                  letterSpacing: '0.2em',
-                  fontFamily: 'var(--font-body)',
-                  textTransform: 'uppercase',
-                }}>
-                  — Viktor E. Frankl
                 </p>
               </div>
 
@@ -418,19 +470,9 @@ function FileViewer({
                   src="/src/assets/unknown-woman.jpg"
                   alt=""
                   className="w-48"
-                  style={{
-                    filter: 'grayscale(100%)',
-                    border: '1px solid rgba(0,0,0,0.2)',
-                    opacity: 0.9,
-                  }}
+                  style={{ filter: 'grayscale(100%)', border: '1px solid rgba(0,0,0,0.2)', opacity: 0.9 }}
                 />
-                <p style={{
-                  fontSize: '0.55rem',
-                  color: '#8A8070',
-                  letterSpacing: '0.2em',
-                  textTransform: 'uppercase',
-                  fontFamily: 'var(--font-body)',
-                }}>
+                <p style={{ fontSize: '0.55rem', color: '#8A8070', letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'var(--font-body)' }}>
                   Found in subject's personal belongings
                 </p>
               </div>
@@ -457,7 +499,6 @@ function FileViewer({
 
               {/* Form fields */}
               <div className="flex flex-col gap-3">
-                {/* Row */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="flex flex-col gap-1">
                     <p style={{ fontSize: '0.55rem', color: '#8A8070', letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'var(--font-body)' }}>
@@ -477,7 +518,6 @@ function FileViewer({
                   </div>
                 </div>
 
-                {/* Row */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="flex flex-col gap-1">
                     <p style={{ fontSize: '0.55rem', color: '#8A8070', letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'var(--font-body)' }}>
@@ -495,7 +535,6 @@ function FileViewer({
                   </div>
                 </div>
 
-                {/* Row */}
                 <div className="grid grid-cols-3 gap-4">
                   <div className="flex flex-col gap-1">
                     <p style={{ fontSize: '0.55rem', color: '#8A8070', letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'var(--font-body)' }}>
@@ -523,16 +562,21 @@ function FileViewer({
                   </div>
                 </div>
 
-                {/* Assessor notes */}
+                {/* Walsh's clinical notes — the cipher lives here now */}
                 <div className="flex flex-col gap-1 mt-1">
                   <p style={{ fontSize: '0.55rem', color: '#8A8070', letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'var(--font-body)' }}>
-                    Assessor Notes
+                    Dr. Walsh — Private Clinical Notes
                   </p>
-                  <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.95rem', color: '#2A2520', lineHeight: 1.7 }}>
-                    Subject presents as highly cooperative. Exceptional verbal intelligence.
-                    Responds readily to structured dialogue around purpose and meaning,
-                    issued standard Kavala reading material on arrival per protocol.
-                    Strong candidate for full Recalibration protocol.
+                  <p style={{
+                    fontFamily: 'var(--font-hand)',
+                    fontSize: '0.85rem',
+                    color: '#3A2E28',
+                    lineHeight: 1.8,
+                    fontStyle: 'italic',
+                  }}>
+                    Subject 007 continues to exceed expectation. He speaks of his journey here often, of{' '}
+                    <span style={{ fontWeight: 600, letterSpacing: '0.03em', color: '#AA4A44' }}>w</span>hat it cost him to leave everyone he knew. There{' '}
+                    <span style={{ fontWeight: 600, letterSpacing: '0.03em', color: '#AA4A44' }}>i</span>s, in him, a particular hunger for meaning that I be<span style={{ fontWeight: 600, letterSpacing: '0.03em', color: '#AA4A44' }}>l</span>ieve makes him idea<span style={{ fontWeight: 600, letterSpacing: '0.03em', color: '#AA4A44' }}>l</span>. He has not asked once why we are doing this, on<span style={{ fontWeight: 600, letterSpacing: '0.03em', color: '#AA4A44' }}>l</span>y thanked us, repeatedly, for the chance to rebuild someth<span style={{ fontWeight: 600, letterSpacing: '0.03em', color: '#AA4A44' }}>i</span>ng better than what he lost. I confess I find this conve<span style={{ fontWeight: 600, letterSpacing: '0.03em', color: '#AA4A44' }}>n</span>ient. He believes this is somethin<span style={{ fontWeight: 600, letterSpacing: '0.03em', color: '#AA4A44' }}>g</span> he is choosing.
                   </p>
                 </div>
 
@@ -544,8 +588,6 @@ function FileViewer({
                   <div style={{ height: '14px', background: '#2A2520', borderRadius: '1px', width: '100%' }} />
                   <div style={{ height: '14px', background: '#2A2520', borderRadius: '1px', width: '75%' }} />
                   <div style={{ height: '14px', background: '#2A2520', borderRadius: '1px', width: '90%' }} />
-
-                  {/* Someone was here before */}
                   <p style={{
                     fontFamily: 'var(--font-hand)',
                     fontSize: '0.85rem',
@@ -556,9 +598,10 @@ function FileViewer({
                     opacity: 0.85,
                     lineHeight: 1.4,
                   }}>
-                    He didn't choose this! -  C.
+                    He didn't choose this. — C.
                   </p>
                 </div>
+
                 {/* Authorisation */}
                 <div className="flex flex-col gap-3 mt-2 pt-3 border-t border-black/10">
                   <div className="flex items-start justify-between">
@@ -579,30 +622,16 @@ function FileViewer({
                       </p>
                     </div>
                   </div>
-
-                  {/* Marginal note — below authorisation, rotated slightly */}
-                  <p style={{
-                    fontFamily: 'var(--font-hand)',
-                    fontSize: '0.72rem',
-                    color: '#5A5040',
-                    transform: 'rotate(-1deg)',
-                    opacity: 0.65,
-                    lineHeight: 1.5,
-                    alignSelf: 'flex-start',
-                    marginTop: '4px',
-                  }}>
-                    Ref: Walsh Protocol p.47 — see subject reading material
-                  </p>
                 </div>
-
               </div>
+
               {/* Answer input */}
               <div className="flex flex-col gap-3 border-t border-black/10 pt-4 mt-2">
                 <p style={{ color: '#7A1616', fontSize: '0.6rem', letterSpacing: '0.4em', fontFamily: 'var(--font-body)', textTransform: 'uppercase' }}>
                   Classified — Analyst Input
                 </p>
                 <p style={{ color: '#2A2520', fontSize: '0.75rem', lineHeight: '1.8', fontFamily: 'var(--font-body)' }}>
-                  CLUE: Institutions choose their words carefully. The ones they display say as much about what they're hiding as what they believe. Read everything, including what they chose to put on the wall.
+                  CLUE: Walsh wrote these notes for himself, not for anyone else to read. He was careless in a few places. Find the letters that don't sit quite right.
                 </p>
                 <AnswerInput answer="WILLING" onUnlock={() => onUnlock('002')} />
               </div>
@@ -653,7 +682,7 @@ function FileViewer({
                 Document recovered in partial condition. Water damage sustained during 1971 transfer. Sections marked ██ are unrecoverable. Entries marked Ω require separate clearance. Cross-reference: Meridian Institute filing ref. MI-1978-KVL
               </p>
 
-              {/* Non-omega entries*/}
+              {/* Step 1 — find Damir among the 23 */}
               <div className="flex flex-col gap-2 border-t border-black/10 pt-3">
                 <p style={{ fontSize: '0.55rem', color: '#8A8070', letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'var(--font-body)', marginBottom: '4px' }}>
                   General Population — Subjects 001—016
@@ -693,30 +722,27 @@ function FileViewer({
                 opacity: 0.75,
                 marginBottom: '8px',
               }}>
-                Each entry gives you something. Start at the beginning.
+                One of the names below belonged to someone you already know. Find him first.
               </p>
 
-              {/* Omega entries — more intact but damaged in specific places */}
+              {/* Omega entries */}
               <div className="flex flex-col gap-4 border-t border-black/10 pt-3">
                 <p style={{ fontSize: '0.55rem', color: '#7A1616', letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'var(--font-body)', marginBottom: '4px' }}>
                   Ω — Restricted Entries
                 </p>
 
-                {/* P — Prague — clean */}
                 <div className="flex flex-col gap-0.5">
                   <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.85rem', color: '#2A2520', lineHeight: 1.6 }}>
                     Ω — CRANE — Released: Prague, 1964 — status: reintegrated
                   </p>
                 </div>
 
-                {/* A — Autumn — clean */}
                 <div className="flex flex-col gap-0.5">
                   <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.85rem', color: '#2A2520', lineHeight: 1.6 }}>
                     Ω — MARTIN — Arrived: autumn 1962 — nationality: ██████
                   </p>
                 </div>
 
-                {/* R — Reside — scratched */}
                 <div className="flex flex-col gap-0.5">
                   <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.85rem', color: '#2A2520', lineHeight: 1.6 }}>
                     Ω — IBIS — destination: ██████ — last known:{' '}
@@ -724,7 +750,7 @@ function FileViewer({
                     <span style={{ opacity: 0.3 }}>█side███</span>
                   </p>
                 </div>
-                {/* I — Interrogation — scratched */}
+
                 <div className="flex flex-col gap-0.5">
                   <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.85rem', color: '#2A2520', lineHeight: 1.6 }}>
                     Ω — EGRET — intake: ███ — field note:{' '}
@@ -733,15 +759,19 @@ function FileViewer({
                   </p>
                 </div>
 
-                {/* S — Sofia — clean */}
                 <div className="flex flex-col gap-0.5">
                   <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.85rem', color: '#2A2520', lineHeight: 1.6 }}>
                     Ω — SWIFT — released: Sofia, 1965 — track: lost
                   </p>
                 </div>
 
-                {/* H — almost gone — hardest */}
-                <div className="flex flex-col gap-0.5">
+                {/* STARLING — players must find this one first */}
+                <div className="flex flex-col gap-0.5" style={{
+                  border: '1px dashed rgba(122,22,22,0.3)',
+                  padding: '8px',
+                  marginLeft: '-8px',
+                  marginRight: '-8px',
+                }}>
                   <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.85rem', color: '#2A2520', lineHeight: 1.6 }}>
                     Ω — STARLING — KVL-007-1963-Ω — assessor:{' '}
                     <span className="ghost">H</span>
@@ -760,13 +790,14 @@ function FileViewer({
                 </div>
 
               </div>
-              {/* Answer input */}
+
+              {/* Verification step — confirm they found him */}
               <div className="flex flex-col gap-3 border-t border-black/10 pt-4 mt-1">
                 <p style={{ color: '#7A1616', fontSize: '0.6rem', letterSpacing: '0.4em', fontFamily: 'var(--font-body)', textTransform: 'uppercase' }}>
                   Analyst Input
                 </p>
                 <p style={{ color: '#2A2520', fontSize: '0.75rem', lineHeight: '1.8', fontFamily: 'var(--font-body)' }}>
-                  CLUE: The Ω entries are not random. Some letters are harder to read than others,that is not an accident.
+                  CLUE: You already know his case number. The Ω entries are not random. Some letters are harder to read than others — that is not an accident.
                 </p>
                 <AnswerInput answer="PARISH" onUnlock={() => onUnlock('003')} />
               </div>
@@ -829,93 +860,39 @@ function FileViewer({
 
                 <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.95rem', color: '#2A2520', lineHeight: 1.85 }}>
                   This memorandum constitutes a formal request for operational rectification regarding KAVAL's continued pluswise function. The programme operates on the assumption that identity is a{' '}
-                  <span style={{
-                    color: '#3A2E28',
-                    fontWeight: 600,
-                    letterSpacing: '0.03em',
-                  }}>
-                    conduit
-                  </span>
+                  <span style={{ color: '#3A2E28', fontWeight: 600, letterSpacing: '0.03em' }}>conduit</span>
                   {' '}that can be demolished and rebuilt to specification. This assumption is not supported by available case documentation and represents a crimethinkful misreading of the psychological literature on which Dr. Walsh bases his work.
                 </p>
 
                 <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.95rem', color: '#2A2520', lineHeight: 1.85 }}>
                   Dr. Walsh has confused compliance with{' '}
-                  <span style={{
-                    color: '#3A2E28',
-                    fontWeight: 600,
-                    letterSpacing: '0.03em',
-                  }}>
-                    obtention
-                  </span>
+                  <span style={{ color: '#3A2E28', fontWeight: 600, letterSpacing: '0.03em' }}>obtention</span>
                   {' '}of goodthink outcomes. The subjects are not ideological assets. They are displaced persons who have learned to{' '}
-                  <span style={{
-                    color: '#3A2E28',
-                    fontWeight: 600,
-                    letterSpacing: '0.03em',
-                  }}>
-                    recount
-                  </span>
+                  <span style={{ color: '#3A2E28', fontWeight: 600, letterSpacing: '0.03em' }}>recount</span>
                   {' '}stability under observation. The programme is not creating true believers. It is creating very convincing{' '}
-                  <span style={{
-                    color: '#3A2E28',
-                    fontWeight: 600,
-                    letterSpacing: '0.03em',
-                  }}>
-                    motions
-                  </span>
+                  <span style={{ color: '#3A2E28', fontWeight: 600, letterSpacing: '0.03em' }}>motions</span>
                   {' '}of belief — and such persons, given sufficient time and external pressure, will eventually reach for what lies{' '}
-                  <span style={{
-                    color: '#3A2E28',
-                    fontWeight: 600,
-                    letterSpacing: '0.03em',
-                  }}>
-                    overhead
-                  </span>
+                  <span style={{ color: '#3A2E28', fontWeight: 600, letterSpacing: '0.03em' }}>overhead</span>
                   {' '}the recalibrated surface.
                 </p>
 
                 <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.95rem', color: '#2A2520', lineHeight: 1.85 }}>
                   I am formally requesting that continued operation of KAVAL be{' '}
-                  <span style={{
-                    color: '#3A2E28',
-                    fontWeight: 600,
-                    letterSpacing: '0.03em',
-                  }}>
-                    rescinded
-                  </span>
+                  <span style={{ color: '#3A2E28', fontWeight: 600, letterSpacing: '0.03em' }}>rescinded</span>
                   {' '}pending independent review. The ethical implications of current methodology cannot be{' '}
-                  <span style={{
-                    color: '#3A2E28',
-                    fontWeight: 600,
-                    letterSpacing: '0.03em',
-                  }}>
-                    abstracted
-                  </span>
+                  <span style={{ color: '#3A2E28', fontWeight: 600, letterSpacing: '0.03em' }}>abstracted</span>
                   {' '}within the programme's own operational framework. We are not rehabilitating displaced persons. We are using their displacement as a vector. I will not dignify this with the language of national security.
                 </p>
 
                 <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.95rem', color: '#2A2520', lineHeight: 1.85 }}>
                   I will not sign off on KAVAL's continuation without a{' '}
-                  <span style={{
-                    color: '#3A2E28',
-                    fontWeight: 600,
-                    letterSpacing: '0.03em',
-                  }}>
-                    normalized
-                  </span>
-                  {' '}review by an body outside this structure. I recognise this memorandum places my position in jeopardy. I am submitting it regardless. Some things cannot be made to fit the approved vocabulary.
+                  <span style={{ color: '#3A2E28', fontWeight: 600, letterSpacing: '0.03em' }}>normalized</span>
+                  {' '}review by a body outside this structure. I recognise this memorandum places my position in jeopardy. I am submitting it regardless. Some things cannot be made to fit the approved vocabulary.
                 </p>
 
                 <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.95rem', color: '#2A2520', lineHeight: 1.85 }}>
                   These are human beings. Not{' '}
-                  <span style={{
-                    color: '#3A2E28',
-                    fontWeight: 600,
-                    letterSpacing: '0.03em',
-                  }}>
-                    theories
-                  </span>
+                  <span style={{ color: '#3A2E28', fontWeight: 600, letterSpacing: '0.03em' }}>theories</span>
                   . Not assets. Not subjects. People.
                 </p>
 
@@ -924,7 +901,7 @@ function FileViewer({
                   Vienna Station, November 1966
                 </p>
 
-                {/* Missing page */}
+                {/* Missing page — now with the final reveal */}
                 <div style={{
                   borderTop: '1px dashed rgba(42,37,32,0.2)',
                   paddingTop: '12px',
@@ -937,7 +914,17 @@ function FileViewer({
                     fontStyle: 'italic',
                     opacity: 0.7,
                   }}>
-                    [ Page 2 not recovered. Filing reference destroyed 1967. ]
+                    [ Page 2 not recovered. ]
+                  </p>
+                  <p style={{
+                    fontFamily: 'var(--font-hand)',
+                    fontSize: '0.78rem',
+                    color: '#7A1616',
+                    fontStyle: 'italic',
+                    opacity: 0.7,
+                    marginTop: '6px',
+                  }}>
+                    [ Filing clerk's note, attached later: E. Parish was reassigned from Vienna Station three weeks after this memo was filed. She died in a road accident outside Vienna on 2 March 1969. She was 26. The case was not investigated further. ]
                   </p>
                 </div>
 
@@ -949,7 +936,7 @@ function FileViewer({
                   Analyst Input
                 </p>
                 <p style={{ color: '#2A2520', fontSize: '0.75rem', lineHeight: '1.8', fontFamily: 'var(--font-body)' }}>
-                  CLUE: Language can be a cage. Some governments understood this better than others. One author wrote about it in 1949. If the words in this document feel wrong, and some of them do, perhaps that is because they were written in a language designed to make wrong seem right. Look at what doesn't fit in. Collect it in order.
+                  CLUE: Language can be a cage. Some governments understood this better than others. One author wrote about it in 1949. If the words in this document feel wrong — and some of them do — perhaps that is because they were written in a language designed to make wrong seem right. Look at what doesn't fit. Collect it in order.
                 </p>
                 <AnswerInput answer="CORMORANT" onUnlock={() => onUnlock('004')} />
               </div>
@@ -1221,7 +1208,10 @@ export default function Archive() {
     return () => subscription.unsubscribe()
   }, [navigate])
   const handleUnlock = async (id: string) => {
-    if (id === 'waitlist') { navigate('/waitlist'); return }
+    if (id === 'waitlist') {
+      navigate('/waitlist-s2')
+      return
+    }
     if (unlockedFiles.includes(id)) return
 
     setUnlockedFiles(prev => [...prev, id])
@@ -1392,8 +1382,8 @@ export default function Archive() {
           >
 
             {/* Wall header */}
-            <div className="flex items-baseline justify-between w-full">
-              <div className="flex items-baseline gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-baseline justify-between w-full gap-2">
+              <div className="flex items-baseline gap-3 flex-wrap">
                 <h1
                   className="text-3xl tracking-widest text-bv-ash"
                   style={{ fontFamily: 'var(--font-display)' }}
@@ -1426,7 +1416,7 @@ export default function Archive() {
                 style={{ background: '#C0392B', border: '2px solid #7A1616', boxShadow: '0 1px 3px rgba(0,0,0,0.5)' }}
               />
               <div
-                className="p-4 md:p-5 flex gap-4 items-start max-w-2xl"
+                className="p-4 md:p-5 flex flex-col sm:flex-row gap-4 items-start max-w-2xl"
                 style={{ backgroundColor: '#D8CEB8', borderRadius: '1px' }}
               >
                 {/* Attachment thumbnail */}
@@ -1613,7 +1603,7 @@ export default function Archive() {
           />
         )}
       </AnimatePresence>
-
     </div>
+
   )
 }

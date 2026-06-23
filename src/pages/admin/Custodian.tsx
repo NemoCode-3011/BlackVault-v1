@@ -583,6 +583,7 @@ function InboxPanel() {
       .order('created_at', { ascending: false })
 
     if (!error && data) {
+
       setMessages(data)
     }
     setLoading(false)
@@ -617,9 +618,12 @@ function InboxPanel() {
       .delete()
       .eq('id', id)
 
-    if (!error) {
-      setMessages(messages.filter(msg => msg.id !== id))
+    if (error) {
+      console.error('Delete failed:', error)
+      return
     }
+
+    setMessages(messages.filter(msg => msg.id !== id))
   }
 
   return (
