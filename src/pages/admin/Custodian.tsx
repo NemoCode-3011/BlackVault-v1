@@ -780,8 +780,8 @@ function AgentsPanel() {
       </div>
 
       {/* Table header */}
-      <div className="grid grid-cols-5 px-5 py-2 border-b border-bv-dust">
-        {['Codename', 'Role', 'Rank', 'Track', 'Joined'].map(h => (
+      <div className="grid grid-cols-4 px-5 py-2 border-b border-bv-dust">
+        {['Codename', 'Role', 'Rank', 'Joined'].map(h => (
           <p key={h} className="text-bv-fog text-[0.6rem] tracking-[0.3em] uppercase">{h}</p>
         ))}
       </div>
@@ -801,14 +801,10 @@ function AgentsPanel() {
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.3, delay: index * 0.05 }}
-              className="grid grid-cols-5 px-5 py-3 bg-bv-vault border border-bv-dust hover:border-bv-fog transition-colors duration-200"
-            >
+              className="grid grid-cols-4 px-5 py-3 bg-bv-vault border border-bv-dust hover:border-bv-fog transition-colors duration-200">
               <p className="text-bv-gold text-xs tracking-widest">{agent.codename}</p>
               <p className="text-bv-ash text-xs tracking-wide">{agent.role}</p>
               <p className="text-bv-fog text-xs tracking-wide">{agent.rank}</p>
-              <p className={`text-xs tracking-wide ${agent.solo ? 'text-bv-blood' : 'text-bv-fog'}`}>
-                {agent.solo ? 'Lone Wolf' : 'Team'}
-              </p>
               <p className="text-bv-fog text-xs tracking-widest">
                 {new Date(agent.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}
               </p>

@@ -27,7 +27,6 @@ export default function SignUp() {
   })
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [isSolo, setIsSolo] = useState(false)
   const [error, setError] = useState('')
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -77,7 +76,6 @@ export default function SignUp() {
             codename,
             role,
             rank: 'Recruit',
-            solo: isSolo,
           })
           .eq('id', data.user.id)
 
@@ -89,7 +87,7 @@ export default function SignUp() {
         }
 
         navigate('/role', {
-          state: { codename, role, solo: isSolo }
+          state: { codename, role}
         })
       }
 
@@ -176,17 +174,6 @@ export default function SignUp() {
             </div>
           </div>
         </div>
-        {/* Solo toggle */}
-        <div
-          onClick={() => setIsSolo(!isSolo)}
-          className="flex items-center gap-3 cursor-pointer group"
-        >
-          <div className={`w-4 h-4 border ${isSolo ? 'bg-bv-gold border-bv-gold' : 'border-bv-dust'} transition-colors duration-300`} />
-          <p className="text-bv-fog text-xs tracking-wide group-hover:text-bv-ash transition-colors duration-300">
-            I work alone. Activate Lone Wolf track.
-          </p>
-        </div>
-
         {/* Error */}
         {error && (
           <p className="text-bv-blood text-[0.65rem] tracking-[0.2em] text-center">

@@ -98,6 +98,15 @@ export default function Meridian() {
         >
           Recent Publications
         </p>
+        <p style={{
+          fontSize: '0.7rem',
+          color: '#8A8A8A',
+          fontFamily: 'Arial, sans-serif',
+          marginBottom: '24px',
+          letterSpacing: '0.05em',
+        }}>
+          Current longitudinal cohort: 23 active participants. Enrollment ongoing.
+        </p>
         <div className="flex flex-col gap-5 md:gap-6" style={{ maxWidth: '720px' }}>
           {[
             {
@@ -179,7 +188,6 @@ export default function Meridian() {
           ))}
         </div>
       </div>
-
       {/* Footer */}
       <div className="px-5 md:px-12 py-6 md:py-8 flex flex-col gap-4" style={{ borderTop: '1px solid #E0DDD8', background: '#FFFFFF' }}>
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
