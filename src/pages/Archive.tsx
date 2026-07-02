@@ -136,7 +136,7 @@ function Document004({ onUnlock }: { onUnlock: (id: string) => void }) {
 
       <div className="flex flex-col gap-2">
         <img
-          src="/assets/50.8410_N_4.3570_E.jpg"
+          src="/src/public/assets/50.8410_N_4.3570_E.jpg"
           alt=""
           style={{ width: '100%', filter: 'grayscale(100%) contrast(1.1) brightness(0.9)', border: '1px solid rgba(0,0,0,0.2)' }}
         />
