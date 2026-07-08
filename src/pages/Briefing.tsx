@@ -51,10 +51,10 @@ export default function Briefing() {
 
         <div className="flex flex-col gap-2">
           <p className="text-bv-gold text-[0.7rem] tracking-[0.3em] uppercase">
-            Roles are informational for now.
+            Not everyone sees the same archive.
           </p>
           <p className="text-bv-fog text-xs leading-relaxed">
-            Your designation doesn't change what you can access yet. That changes in the next phase of Operation KAVAL.
+            Your designation shapes what reaches you. Compare notes with someone running this differently, and don't assume you're seeing the same thing.
           </p>
         </div>
         {solo && (

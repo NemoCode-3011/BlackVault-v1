@@ -269,11 +269,13 @@ function FileViewer({
   onClose,
   onUnlock,
   isUnlocked,
+  agentRole,
 }: {
   fileId: string
   onClose: () => void
   onUnlock: (id: string) => void
   isUnlocked: (id: string) => boolean
+  agentRole?: string
 }) {
   const overlayRef = useRef<HTMLDivElement>(null)
   const documentRef = useRef<HTMLDivElement>(null)
@@ -763,7 +765,9 @@ function FileViewer({
                     [ Page 2 not recovered. ]
                   </p>
                   <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.78rem', color: '#7A1616', fontStyle: 'italic', opacity: 0.7, marginTop: '6px' }}>
-                    [ Filing clerk's note, attached later: E. Parish was reassigned from Vienna Station three weeks after this memo was filed. She died in a road accident outside Vienna on 2 March 1969. She was 26. The case was not investigated further. ]
+                    {agentRole === 'Defector'
+                      ? "[ Filing clerk's note, attached later: E. Parish was reassigned from Vienna Station three weeks after this memo was filed. She resigned from service in 1971 and relocated to Canada. No further contact on file. ]"
+                      : "[ Filing clerk's note, attached later: E. Parish was reassigned from Vienna Station three weeks after this memo was filed. She died in a road accident outside Vienna on 2 March 1969. She was 26. The case was not investigated further. ]"}
                   </p>
                 </div>
               </div>
@@ -1219,6 +1223,7 @@ export default function Archive() {
             fileId={activeFile}
             onClose={() => setActiveFile(null)}
             isUnlocked={isUnlocked}
+            agentRole={agent?.role}
             onUnlock={(id) => {
               handleUnlock(id)
               if (activeFile === '000') setLetterRead(true)
