@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState} from 'react'
 import { motion } from 'framer-motion'
 import { Loader } from 'lucide-react'
 import { supabase } from '../lib/supabase'
@@ -82,7 +82,7 @@ export default function SeasonTwoWaitlist() {
               />
 
               {error && (
-                <p className="text-bv-blood text-[0.65rem] tracking-[0.1em]">
+                <p className="text-bv-blood text-[0.65rem] tracking-widest">
                   {error}
                 </p>
               )}
