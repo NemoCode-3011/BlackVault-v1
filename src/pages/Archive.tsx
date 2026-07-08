@@ -5,7 +5,7 @@ import bvStamp from '../assets/blackvault-stamp.png'
 import bvLogo from '../assets/bv-logo.png'
 import unknownWoman from '../assets/unknown-woman.jpg'
 import { supabase } from '../lib/supabase'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { signOut } from '../lib/auth'
 
 // --- AnswerInput ---
@@ -142,9 +142,8 @@ function Document004({ onUnlock }: { onUnlock: (id: string) => void }) {
         />
         <div className="flex items-center justify-between">
           <p style={{ fontSize: '0.55rem', color: '#8A8070', letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'var(--font-body)' }}>
-            No caption. No date. No location metadata.
+            This preview strips embedded data. The original file may not.
           </p>
-
           < a href="/assets/50.8410_N_4.3570_E.jpg"
             download="50.8410_N_4.3570_E.jpg"
             style={{ fontSize: '0.6rem', color: '#7A1616', letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'var(--font-body)', textDecoration: 'none', borderBottom: '1px solid #7A1616', paddingBottom: '1px' }}
@@ -269,10 +268,12 @@ function FileViewer({
   fileId,
   onClose,
   onUnlock,
+  isUnlocked,
 }: {
   fileId: string
   onClose: () => void
   onUnlock: (id: string) => void
+  isUnlocked: (id: string) => boolean
 }) {
   const overlayRef = useRef<HTMLDivElement>(null)
   const documentRef = useRef<HTMLDivElement>(null)
@@ -474,7 +475,7 @@ function FileViewer({
                     display: 'inline-block',
                     width: 'fit-content',
                   }}>
-                    WILLING
+                    HF-7 / CLASS W
                   </p>
                 </div>
 
@@ -521,7 +522,7 @@ function FileViewer({
                   Classified — Analyst Input
                 </p>
                 <p style={{ color: '#2A2520', fontSize: '0.75rem', lineHeight: '1.8', fontFamily: 'var(--font-body)' }}>
-                  Dates as recorded. Participation classification per Dr. Walsh, Form HF-7.
+                  Classification code per Form HF-7. Key filed with the transit record.
                 </p>
                 <AnswerInput answer="WILLING" onUnlock={() => onUnlock('002')} />
               </div>
@@ -556,9 +557,16 @@ function FileViewer({
                   <p style={{ fontFamily: 'var(--font-display)', fontSize: '0.85rem', color: '#7A1616' }}>23</p>
                 </div>
               </div>
-
               <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.78rem', color: '#8A8070', fontStyle: 'italic', lineHeight: 1.6 }}>
-                Document recovered in partial condition. Water damage sustained during 1971 transfer. Sections marked ██ are unrecoverable. Entries marked Ω require separate clearance. Cross-reference: Meridian Institute filing ref. MI-1978-KVL
+                Document recovered in partial condition. Water damage sustained during 1971 transfer. Sections marked ██ are unrecoverable. Entries marked Ω require separate clearance. Cross-reference:{' '}
+                {isUnlocked('004') ? (
+                  <Link to="/meridian" target="_blank" style={{ color: '#7A1616', fontStyle: 'normal', borderBottom: '1px solid #7A1616', textDecoration: 'none' }}>
+                    Meridian Institute
+                  </Link>
+                ) : (
+                  <span style={{ color: '#7A1616', fontStyle: 'normal' }}>Meridian Institute</span>
+                )}{' '}
+                filing ref. MI-1978-KVL
               </p>
 
               <div className="flex flex-col gap-2 border-t border-black/10 pt-3">
@@ -604,13 +612,15 @@ function FileViewer({
                 <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.85rem', color: '#2A2520', lineHeight: 1.6 }}>
                   Ω — SWIFT — released: Sofia, 1965 — track: lost
                 </p>
-
                 <div style={{ border: '1px dashed rgba(122,22,22,0.3)', padding: '8px', marginLeft: '-8px', marginRight: '-8px' }}>
                   <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.85rem', color: '#2A2520', lineHeight: 1.6 }}>
                     Ω — STARLING — KVL-007-1963-Ω — assessor: ████████
                   </p>
                   <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.72rem', color: '#7A1616', fontStyle: 'italic', opacity: 0.6, marginTop: '2px' }}>
                     — flagged for removal. See C.
+                  </p>
+                  <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.72rem', color: '#7A1616', fontStyle: 'italic', opacity: 0.6, marginTop: '4px' }}>
+                    — same mark as the case number on his intake form. It doesn't explain itself here either.
                   </p>
                 </div>
               </div>
@@ -626,11 +636,19 @@ function FileViewer({
                     Discrepancy noted and investigated. Recount confirms total of twenty-three. One entry was filed separately due to incomplete intake documentation. Cross-referenced against Vienna Station records.
                   </p>
                   <p style={{ fontFamily: 'var(--font-hand)', fontSize: '0.8rem', color: '#3A2E28', marginTop: '8px', textAlign: 'right' }}>
-                    — verified, E. P_____, Vienna Station, 1966
+                    — verified, E. PAR___, Vienna Station, 1966
                   </p>
                 </div>
               </div>
-
+              {/* Form HF-7 classification key — printed footer, resolves Doc001's coded stamp */}
+              <div style={{ border: '1px solid rgba(0,0,0,0.15)', padding: '10px', marginTop: '4px', background: 'rgba(0,0,0,0.02)' }}>
+                <p style={{ textTransform: 'uppercase', fontSize: '0.55rem', color: '#8A8070', letterSpacing: '0.2em', marginBottom: '4px', fontFamily: 'var(--font-body)' }}>
+                  Form HF-7 — Classification Key
+                </p>
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.65rem', color: '#3A2E28', letterSpacing: '0.05em' }}>
+                  W — Willing &nbsp;·&nbsp; C — Compelled &nbsp;·&nbsp; R — Reassigned &nbsp;·&nbsp; T — Terminated
+                </p>
+              </div>
               <div className="flex flex-col gap-3 border-t border-black/10 pt-4 mt-1">
                 <p style={{ color: '#7A1616', fontSize: '0.6rem', letterSpacing: '0.4em', fontFamily: 'var(--font-body)', textTransform: 'uppercase' }}>
                   Analyst Input
@@ -638,7 +656,13 @@ function FileViewer({
                 <p style={{ color: '#2A2520', fontSize: '0.75rem', lineHeight: '1.8', fontFamily: 'var(--font-body)' }}>
                   Cross-reference against original station manifest recommended. Verification attached.
                 </p>
-                <AnswerInput answer="PARISH" onUnlock={() => onUnlock('003')} />
+                {isUnlocked('002') ? (
+                  <AnswerInput answer="PARISH" onUnlock={() => onUnlock('003')} />
+                ) : (
+                  <p style={{ color: '#8A8070', fontSize: '0.65rem', letterSpacing: '0.1em', fontFamily: 'var(--font-body)', fontStyle: 'italic' }}>
+                    Submission locked. Document 001 must be resolved first.
+                  </p>
+                )}
               </div>
             </div>
           )}
@@ -749,7 +773,7 @@ function FileViewer({
                   Analyst Input
                 </p>
                 <p style={{ color: '#2A2520', fontSize: '0.75rem', lineHeight: '1.8', fontFamily: 'var(--font-body)' }}>
-                  Three accounts filed separately. Discrepancies noted but not reconciled at time of recovery. CORMORANT designation referenced in internal correspondence index.
+                  Three accounts filed separately. Discrepancies noted but not reconciled at time of recovery. Bird names are reserved for protected sources — not subjects, not case numbers.
                 </p>
                 <AnswerInput answer="CORMORANT" onUnlock={() => onUnlock('004')} />
               </div>
@@ -791,9 +815,9 @@ function WallThreads() {
 }
 
 // --- DocumentCard ---
-type DocStatus = 'available' | 'corrupted' | 'locked'
+type DocStatus = 'available' | 'corrupted' | 'locked' | 'preview'
 
-function DocumentCard({ id, docNumber, title, description, status, pinColor, onClick }: {
+function DocumentCard({ docNumber, title, description, status, pinColor, onClick }: {
   id: string
   docNumber: string
   title: string
@@ -803,7 +827,7 @@ function DocumentCard({ id, docNumber, title, description, status, pinColor, onC
   onClick?: () => void
 }) {
   const pinColors = { gold: '#D4A843', red: '#C0392B', grey: '#3D3B2F' }
-  const isClickable = status === 'available'
+  const isClickable = status === 'available' || status === 'preview'
 
   return (
     <div className="relative pt-3" style={{ cursor: isClickable ? 'pointer' : 'default' }} onClick={isClickable ? onClick : undefined}>
@@ -813,7 +837,7 @@ function DocumentCard({ id, docNumber, title, description, status, pinColor, onC
       />
       <div
         className="p-4 transition-transform duration-150"
-        style={{ backgroundColor: status === 'locked' ? '#1A1714' : '#D8CEB8', border: status === 'locked' ? '1px solid #3D3B2F' : 'none' }}
+        style={{ backgroundColor: status === 'locked' ? '#1A1714' : status === 'preview' ? '#C4BBA2' : '#D8CEB8', border: status === 'locked' ? '1px solid #3D3B2F' : 'none' }}
         onMouseEnter={e => { if (isClickable) (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)' }}
         onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0px)' }}
       >
@@ -821,22 +845,21 @@ function DocumentCard({ id, docNumber, title, description, status, pinColor, onC
           {docNumber}
         </p>
         <p style={{ fontFamily: 'var(--font-display)', fontSize: '0.9rem', color: status === 'locked' ? '#3D3B2F' : '#1A1714', marginBottom: '6px', lineHeight: 1.3 }}>
-          {title}
+          {status === 'locked' ? 'Classification pending' : title}
         </p>
         <p style={{ fontSize: '0.7rem', color: status === 'locked' ? '#3D3B2F' : '#5A5040', lineHeight: 1.5, fontFamily: 'var(--font-body)', marginBottom: '8px' }}>
           {description}
         </p>
         <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-          <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: status === 'available' ? '#556B57' : status === 'corrupted' ? '#D4A843' : '#3D3B2F', flexShrink: 0 }} />
-          <p style={{ fontSize: '0.6rem', letterSpacing: '0.15em', textTransform: 'uppercase', fontFamily: 'var(--font-body)', fontWeight: 600, color: status === 'available' ? '#556B57' : status === 'corrupted' ? '#D4A843' : '#3D3B2F' }}>
-            {status === 'available' ? 'Available' : status === 'corrupted' ? 'Corrupted — restore to read' : 'Locked'}
+          <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: status === 'available' ? '#556B57' : status === 'corrupted' ? '#D4A843' : status === 'preview' ? '#8A6B1A' : '#3D3B2F', flexShrink: 0 }} />
+          <p style={{ fontSize: '0.6rem', letterSpacing: '0.15em', textTransform: 'uppercase', fontFamily: 'var(--font-body)', fontWeight: 600, color: status === 'available' ? '#556B57' : status === 'corrupted' ? '#D4A843' : status === 'preview' ? '#8A6B1A' : '#3D3B2F' }}>
+            {status === 'available' ? 'Available' : status === 'corrupted' ? 'Corrupted — restore to read' : status === 'preview' ? 'Readable — submission locked' : 'Locked'}
           </p>
         </div>
       </div>
     </div>
   )
 }
-
 // --- Archive ---
 export default function Archive() {
   const navigate = useNavigate()
@@ -914,7 +937,10 @@ export default function Archive() {
 
   const isUnlocked = (id: string) => unlockedFiles.includes(id)
   const docStatus = (id: string, corrupted = false): DocStatus => {
-    if (!isUnlocked(id)) return 'locked'
+    if (!isUnlocked(id)) {
+      if (id === '002') return 'preview'
+      return 'locked'
+    }
     if (corrupted) return 'corrupted'
     return 'available'
   }
@@ -1192,6 +1218,7 @@ export default function Archive() {
           <FileViewer
             fileId={activeFile}
             onClose={() => setActiveFile(null)}
+            isUnlocked={isUnlocked}
             onUnlock={(id) => {
               handleUnlock(id)
               if (activeFile === '000') setLetterRead(true)

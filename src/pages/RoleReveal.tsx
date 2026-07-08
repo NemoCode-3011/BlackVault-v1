@@ -17,7 +17,7 @@ export default function RoleReveal() {
   const [revealed, setRevealed] = useState(false)
   const [loading, setLoading] = useState(true)
 
-  const { codename, role, solo } = location.state || {}
+  const { codename, role} = location.state || {}
 
   useEffect(() => {
     if (!codename || !role) {
@@ -31,7 +31,7 @@ export default function RoleReveal() {
 
       const { error } = await supabase
         .from('profiles')
-        .update({ codename, role, solo })
+        .update({ codename, role})
         .eq('id', session.user.id)
 
       if (error) {
@@ -48,7 +48,7 @@ export default function RoleReveal() {
       clearTimeout(loadTimer)
       clearTimeout(revealTimer)
     }
-  }, [codename, role, solo, navigate])
+  }, [codename, role, navigate])
 
   return (
     <div className="min-h-screen bg-bv-void flex items-center justify-center px-6 relative">
@@ -108,20 +108,9 @@ export default function RoleReveal() {
                 {roleDescriptions[role]}
               </p>
             </div>
-
-            {/* Solo status */}
-            {solo && (
-              <div className="flex items-center gap-3">
-                <div className="w-4 h-4 bg-bv-gold border-bv-gold border" />
-                <p className="text-bv-fog text-xs tracking-wide">
-                  Lone Wolf track activated.
-                </p>
-              </div>
-            )}
-
             {/* Proceed button */}
             <button
-              onClick={() => navigate('/signin')}
+              onClick={() => navigate('/briefing', { state: { codename, role } })}
               className="w-full border border-bv-blood text-bv-ash text-xs tracking-[0.4em] uppercase py-3 hover:bg-bv-blood/10 transition-colors duration-300 cursor-pointer"
             >
               Proceed to Sign In

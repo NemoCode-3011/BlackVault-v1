@@ -149,7 +149,6 @@ export default function Custodian() {
 function OverviewPanel() {
   const [stats, setStats] = useState({
     totalAgents: 0,
-    soloAgents: 0,
     filesUnlocked: 0,
     messagesSent: 0,
   })
@@ -164,10 +163,6 @@ function OverviewPanel() {
         .from('profiles')
         .select('*', { count: 'exact', head: true })
 
-      const { count: soloAgents } = await supabase
-        .from('profiles')
-        .select('*', { count: 'exact', head: true })
-        .eq('solo', true)
 
       const { count: filesUnlocked } = await supabase
         .from('file_progress')
@@ -179,7 +174,6 @@ function OverviewPanel() {
 
       setStats({
         totalAgents: totalAgents ?? 0,
-        soloAgents: soloAgents ?? 0,
         filesUnlocked: filesUnlocked ?? 0,
         messagesSent: messagesSent ?? 0,
       })
@@ -247,7 +241,6 @@ function OverviewPanel() {
 
   const statCards = [
     { label: 'Total Agents', value: stats.totalAgents },
-    { label: 'Lone Wolves', value: stats.soloAgents },
     { label: 'Files Unlocked', value: stats.filesUnlocked },
     { label: 'Messages Sent', value: stats.messagesSent },
   ]
@@ -748,7 +741,6 @@ function AgentsPanel() {
     codename: string
     role: string
     rank: string
-    solo: boolean
     created_at: string
   }[]>([])
   const [loading, setLoading] = useState(true)
@@ -757,7 +749,7 @@ function AgentsPanel() {
     async function fetchAgents() {
       const { data, error } = await supabase
         .from('profiles')
-        .select('codename, role, rank, solo, created_at')
+        .select('codename, role, rank, created_at')
         .order('created_at', { ascending: false })
 
       if (!error && data) {

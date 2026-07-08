@@ -1,4 +1,24 @@
+import { useEffect, useState } from 'react'
+import { supabase } from '../lib/supabase'
 export default function Meridian() {
+  const [scrubbed, setScrubbed] = useState(false)
+
+  useEffect(() => {
+    const checkExposure = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) return
+
+      const { data } = await supabase
+        .from('file_progress')
+        .select('file_id')
+        .eq('user_id', session.user.id)
+        .eq('file_id', '004')
+        .maybeSingle()
+
+      if (data) setScrubbed(true)
+    }
+    checkExposure()
+  }, [])
   return (
     <div style={{
       fontFamily: 'Georgia, serif',
@@ -105,7 +125,7 @@ export default function Meridian() {
           marginBottom: '24px',
           letterSpacing: '0.05em',
         }}>
-          Current longitudinal cohort: 23 active participants. Enrollment ongoing.
+          Current longitudinal cohort: {scrubbed ? 22 : 23} active participants. Enrollment ongoing.
         </p>
         <div className="flex flex-col gap-5 md:gap-6" style={{ maxWidth: '720px' }}>
           {[
@@ -165,11 +185,17 @@ export default function Meridian() {
               title: 'Head of Research',
               note: 'Specialisation: Post-displacement identity reconstruction'
             },
-            {
-              name: 'James Aldric Walsh',
-              title: 'Senior Fellow',
-              note: 'Grandson of founding research consultant Dr. A. Walsh'
-            },
+            scrubbed
+              ? {
+                name: '████████ ██████',
+                title: 'Position Vacant',
+                note: 'Records under internal review.'
+              }
+              : {
+                name: 'James Aldric Walsh',
+                title: 'Senior Fellow',
+                note: 'Grandson of founding research consultant Dr. A. Walsh'
+              },
           ].map((person, i) => (
             <div key={i}>
               <div className="w-14 h-14 mb-3" style={{ background: '#E0DDD8' }} />

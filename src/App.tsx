@@ -3,6 +3,7 @@ import Entrance from './pages/Entrance'
 import SignUp from './pages/SignUp'
 import SignIn from './pages/SignIn'
 import RoleReveal from './pages/RoleReveal'
+import Briefing from './pages/briefing'
 import Custodian from './pages/admin/Custodian'
 import Archive from './pages/Archive'
 import Meridian from './pages/Meridian'
@@ -21,6 +22,7 @@ function App() {
       <Route path="/signup" element={<SignUp />} />
       <Route path="/signin" element={<SignIn />} />
       <Route path="/role" element={<RoleReveal />} />
+      <Route path="/briefing" element={<Briefing />} />
       <Route path="/meridian" element={<Meridian />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/waitlist" element={<Waitlist />} />
@@ -30,7 +32,7 @@ function App() {
       <Route path="/archive" element={<ProtectedRoute><Archive /></ProtectedRoute>} />
       {/* admin */}
       <Route path="/custodian-login" element={<CustodianLogin />} />
-      <Route path="/custodian" element={<CustodianRoute><Custodian /></CustodianRoute>}/>
+      <Route path="/custodian" element={<CustodianRoute><Custodian /></CustodianRoute>} />
     </Routes >
 
   )
