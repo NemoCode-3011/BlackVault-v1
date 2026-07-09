@@ -889,7 +889,7 @@ export default function Archive() {
         .eq('id', userId)
         .maybeSingle()
 
-      if (!profile) { navigate('/signin'); return }
+      if (!profile) { navigate('/signup'); return }
 
       setAgent(profile)
 
@@ -921,9 +921,9 @@ export default function Archive() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'INITIAL_SESSION') {
         if (session?.user) { loadAgentData(session.user.id) }
-        else { navigate('/signin') }
+        else { navigate('/signup') }
       } else if (event === 'SIGNED_OUT') {
-        navigate('/signin')
+        navigate('/signup')
       }
     })
 
@@ -1000,7 +1000,7 @@ export default function Archive() {
           </div>
           <div className="hidden sm:block w-px h-4 bg-bv-dust" />
           <button
-            onClick={async () => { sessionStorage.removeItem('custodian_verified'); await signOut(); navigate('/signin') }}
+            onClick={async () => { sessionStorage.removeItem('custodian_verified'); await signOut(); navigate('/signup') }}
             className="text-bv-fog text-[0.5rem] md:text-[0.6rem] tracking-[0.2em] uppercase hover:text-bv-blood transition-colors duration-200 cursor-pointer"
           >
             Sign Out

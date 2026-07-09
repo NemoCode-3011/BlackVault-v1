@@ -162,7 +162,7 @@ function OverviewPanel() {
       const { count: totalAgents } = await supabase
         .from('profiles')
         .select('*', { count: 'exact', head: true })
-
+        .eq('is_custodian', false)
 
       const { count: filesUnlocked } = await supabase
         .from('file_progress')
@@ -252,7 +252,7 @@ function OverviewPanel() {
   return (
     <div className="flex flex-col gap-6 overflow-y-auto">
       {/* Stat cards */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-3 gap-4">
         {statCards.map(({ label, value }) => (
           <div key={label} className="bg-bv-vault border rounded-md shadow-xs shadow-bv-fog border-bv-dust p-5 flex flex-col gap-2">
             <p className="text-bv-fog text-[0.65rem] tracking-[0.3em] uppercase">{label}</p>
@@ -741,6 +741,7 @@ function AgentsPanel() {
     codename: string
     role: string
     rank: string
+    full_name: string
     created_at: string
   }[]>([])
   const [loading, setLoading] = useState(true)
@@ -749,7 +750,7 @@ function AgentsPanel() {
     async function fetchAgents() {
       const { data, error } = await supabase
         .from('profiles')
-        .select('codename, role, rank, created_at')
+        .select('codename, role, rank, full_name, created_at')
         .order('created_at', { ascending: false })
 
       if (!error && data) {
@@ -772,8 +773,8 @@ function AgentsPanel() {
       </div>
 
       {/* Table header */}
-      <div className="grid grid-cols-4 px-5 py-2 border-b border-bv-dust">
-        {['Codename', 'Role', 'Rank', 'Joined'].map(h => (
+      <div className="grid grid-cols-5 px-5 py-2 border-b border-bv-dust">
+        {['Codename', 'Name', 'Role', 'Rank', 'Joined'].map(h => (
           <p key={h} className="text-bv-fog text-[0.6rem] tracking-[0.3em] uppercase">{h}</p>
         ))}
       </div>
@@ -793,8 +794,9 @@ function AgentsPanel() {
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.3, delay: index * 0.05 }}
-              className="grid grid-cols-4 px-5 py-3 bg-bv-vault border border-bv-dust hover:border-bv-fog transition-colors duration-200">
+              className="grid grid-cols-5 px-5 py-3 bg-bv-vault border border-bv-dust hover:border-bv-fog transition-colors duration-200">
               <p className="text-bv-gold text-xs tracking-widest">{agent.codename}</p>
+              <p className="text-bv-ash text-xs tracking-wide">{agent.full_name || '—'}</p>
               <p className="text-bv-ash text-xs tracking-wide">{agent.role}</p>
               <p className="text-bv-fog text-xs tracking-wide">{agent.rank}</p>
               <p className="text-bv-fog text-xs tracking-widest">
@@ -810,20 +812,52 @@ function AgentsPanel() {
 
 function SettingsPanel() {
   const [settings, setSettings] = useState({
-    vaultName: 'BlackVault',
-    operationName: 'Operation Kaval',
     maintenanceMode: false,
     newSignups: true,
-    weeklyDrops: true,
   })
+  const [loading, setLoading] = useState(true)
 
-  const toggle = (key: keyof typeof settings) => {
-    setSettings({ ...settings, [key]: !settings[key] })
+  useEffect(() => {
+    async function fetchSettings() {
+      const { data } = await supabase
+        .from('app_settings')
+        .select('maintenance_mode, new_signups')
+        .eq('id', 1)
+        .single()
+
+      if (data) {
+        setSettings({
+          maintenanceMode: data.maintenance_mode,
+          newSignups: data.new_signups,
+        })
+      }
+      setLoading(false)
+    }
+    fetchSettings()
+  }, [])
+
+  const toggle = async (key: keyof typeof settings) => {
+    const newValue = !settings[key]
+    setSettings({ ...settings, [key]: newValue })
+
+    const column = key === 'maintenanceMode' ? 'maintenance_mode' : 'new_signups'
+    const { error } = await supabase
+      .from('app_settings')
+      .update({ [column]: newValue })
+      .eq('id', 1)
+
+    if (error) {
+      console.error('Failed to save setting:', error)
+      setSettings({ ...settings, [key]: !newValue })
+    }
+  }
+
+  if (loading) {
+    return <p className="text-bv-fog text-xs tracking-[0.3em] uppercase">Loading settings...</p>
   }
 
   return (
     <div className="flex flex-col gap-6">
-
       <div>
         <p className="text-bv-blood text-[0.65rem] tracking-[0.4em] uppercase">System</p>
         <h2 className="text-bv-ash text-xl tracking-widest" style={{ fontFamily: 'var(--font-display)' }}>
@@ -831,32 +865,6 @@ function SettingsPanel() {
         </h2>
       </div>
 
-      {/* General */}
-      <div className="bg-bv-vault border border-bv-dust p-6 flex flex-col gap-5">
-        <p className="text-bv-fog text-[0.65rem] tracking-[0.4em] uppercase border-b border-bv-dust pb-3">
-          General
-        </p>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="flex flex-col gap-2">
-            <label className="text-bv-fog text-[0.6rem] tracking-[0.3em] uppercase">Vault Name</label>
-            <input
-              value={settings.vaultName}
-              onChange={e => setSettings({ ...settings, vaultName: e.target.value })}
-              className="bg-bv-void border border-bv-dust text-bv-ash text-sm px-3 py-2.5 outline-none focus:border-bv-gold transition-colors duration-200"
-            />
-          </div>
-          <div className="flex flex-col gap-2">
-            <label className="text-bv-fog text-[0.6rem] tracking-[0.3em] uppercase">Operation Name</label>
-            <input
-              value={settings.operationName}
-              onChange={e => setSettings({ ...settings, operationName: e.target.value })}
-              className="bg-bv-void border border-bv-dust text-bv-ash text-sm px-3 py-2.5 outline-none focus:border-bv-gold transition-colors duration-200"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Toggles */}
       <div className="bg-bv-vault border border-bv-dust p-6 flex flex-col gap-5">
         <p className="text-bv-fog text-[0.65rem] tracking-[0.4em] uppercase border-b border-bv-dust pb-3">
           Controls
@@ -864,7 +872,6 @@ function SettingsPanel() {
         {[
           { key: 'maintenanceMode', label: 'Maintenance Mode', description: 'Lock all agents out of the vault' },
           { key: 'newSignups', label: 'New Signups', description: 'Allow new agents to request clearance' },
-          { key: 'weeklyDrops', label: 'Weekly File Drops', description: 'Automatically release scheduled files' },
         ].map(({ key, label, description }) => (
           <div key={key} className="flex items-center justify-between">
             <div>
@@ -880,7 +887,6 @@ function SettingsPanel() {
           </div>
         ))}
       </div>
-
     </div>
   )
 }

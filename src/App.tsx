@@ -3,13 +3,11 @@ import Entrance from './pages/Entrance'
 import SignUp from './pages/SignUp'
 import SignIn from './pages/SignIn'
 import RoleReveal from './pages/RoleReveal'
-import Briefing from './pages/briefing'
+import Briefing from './pages/Briefing'
 import Custodian from './pages/admin/Custodian'
 import Archive from './pages/Archive'
 import Meridian from './pages/Meridian'
-import ResetPassword from './pages/ResetPassword'
 import ProtectedRoute from './components/UI/ProtectedRoutes'
-import Waitlist from './pages/Waitlist'
 import CustodianLogin from './pages/admin/CustodianLogin'
 import CustodianRoute from './components/UI/CustodianRoutes'
 import SeasonTwoWaitlist from './pages/SeasonTwoWaitlist'
@@ -24,8 +22,6 @@ function App() {
       <Route path="/role" element={<RoleReveal />} />
       <Route path="/briefing" element={<Briefing />} />
       <Route path="/meridian" element={<Meridian />} />
-      <Route path="/reset-password" element={<ResetPassword />} />
-      <Route path="/waitlist" element={<Waitlist />} />
       <Route path="/waitlist-s2" element={<SeasonTwoWaitlist />} />
 
       {/* Archive with Protected Route */}

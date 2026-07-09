@@ -5,7 +5,7 @@ import operativePhoto from "../assets/Ok.png"
 export default function Briefing() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { codename, solo } = location.state || {}
+  const { codename } = location.state || {}
 
   return (
     <div className="min-h-screen bg-bv-void flex items-center justify-center px-6 py-12">
@@ -57,19 +57,11 @@ export default function Briefing() {
             Your designation shapes what reaches you. Compare notes with someone running this differently, and don't assume you're seeing the same thing.
           </p>
         </div>
-        {solo && (
-          <div className="flex items-center gap-3 border-t border-bv-dust pt-5">
-            <div className="w-4 h-4 bg-bv-gold border-bv-gold border shrink-0" />
-            <p className="text-bv-fog text-xs tracking-wide">
-              You're running this alone. No one is coming to explain what you missed.
-            </p>
-          </div>
-        )}
         <button
-          onClick={() => navigate('/signin')}
+          onClick={() => navigate('/archive')}
           className="w-full border border-bv-blood text-bv-ash text-xs tracking-[0.4em] uppercase py-3 hover:bg-bv-blood/10 transition-colors duration-300 cursor-pointer mt-2"
         >
-          {codename ? `Proceed,${codename}` : 'Proceed to Sign In'}
+          {codename ? `Proceed, ${codename}` : 'Enter the Archive'}
         </button>
       </motion.div>
     </div>

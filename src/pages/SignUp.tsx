@@ -1,113 +1,41 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Eye, EyeOff, Loader } from 'lucide-react'
 import { supabase } from '../lib/supabase'
-
-const firstWords = ['Rusty', 'Pale', 'Hollow', 'Burnt', 'Stray', 'Broken', 'Silent', 'Faded', 'Cold', 'Cracked', 'Dim', 'Worn', 'Lost', 'Odd', 'Bare', 'Dusty', 'Slack', 'Grey', 'Blunt', 'Tangled']
-const secondWords = ['Owl', 'Fox', 'Sparrow', 'Sage', 'Echo', 'Raven', 'Moth', 'Pike', 'Finch', 'Wren', 'Hound', 'Lark', 'Crane', 'Veil', 'Gate', 'Drift', 'Shade', 'Flint', 'Reed', 'Thorn']
-const roles = ['Intelligence Officer', 'Mole', 'Cryptanalyst', 'Spotter', 'Defector']
-
-function generateCodename() {
-  const first = firstWords[Math.floor(Math.random() * firstWords.length)]
-  const second = secondWords[Math.floor(Math.random() * secondWords.length)]
-  return `${first} ${second}`
-}
-
-function assignRole() {
-  return roles[Math.floor(Math.random() * roles.length)]
-}
+import { useState, useEffect } from 'react'
 
 export default function SignUp() {
-  const navigate = useNavigate()
-  const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    password: '',
-  })
-  const [showPassword, setShowPassword] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
+  const handleDiscordLogin = async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: 'discord',
+      options: {
+        redirectTo: `${window.location.origin}/role`,
+      },
+    })
   }
+  const [signupsOpen, setSignupsOpen] = useState(true)
+  const [checking, setChecking] = useState(true)
 
-  const handleSubmit = async () => {
-    setError('')
-
-    if (!formData.fullName || !formData.email || !formData.password) {
-      setError('All fields are required.')
-      return
+  useEffect(() => {
+    async function checkSignups() {
+      const { data } = await supabase
+        .from('app_settings')
+        .select('new_signups')
+        .eq('id', 1)
+        .single()
+      setSignupsOpen(data?.new_signups ?? true)
+      setChecking(false)
     }
-
-    if (formData.password.length < 8) {
-      setError('Password must be at least 8 characters.')
-      return
-    }
-
-    setLoading(true)
-
-    try {
-      const codename = generateCodename()
-      const role = assignRole()
-
-      const { data, error: signUpError } = await supabase.auth.signUp({
-        email: formData.email,
-        password: formData.password,
-        options: {
-          data: {
-            full_name: formData.fullName,
-          }
-        }
-      })
-
-      if (signUpError) {
-        setError(signUpError.message)
-        setLoading(false)
-        return
-      }
-
-      if (data.user) {
-        // Trigger already created the row — update it with real data
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .update({
-            codename,
-            role,
-            rank: 'Recruit',
-          })
-          .eq('id', data.user.id)
-
-        if (profileError) {
-          console.error(profileError)
-          setError('Profile creation failed. Try again.')
-          setLoading(false)
-          return
-        }
-
-        navigate('/role', {
-          state: { codename, role}
-        })
-      }
-
-    } catch {
-      setError('Something went wrong. Try again.')
-      setLoading(false)
-    }
-  }
+    checkSignups()
+  }, [])
 
   return (
-    <div className="min-h-screen bg-bv-void flex items-center justify-center px-6 overflow-y-scroll">
+    <div className="min-h-screen bg-bv-void flex items-center justify-center px-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        className="w-full max-w-md flex flex-col gap-8"
+        className="w-full max-w-md flex flex-col gap-8 text-center"
       >
-
-        {/* Header */}
-        <div className="flex flex-col items-center gap-2 text-center">
+        <div className="flex flex-col items-center gap-2">
           <p className="text-bv-blood text-xs tracking-[0.4em] uppercase">
             Classified Access
           </p>
@@ -118,91 +46,22 @@ export default function SignUp() {
             Your role within Operation Kaval will be assigned upon entry.
           </p>
         </div>
-
-        {/* Form */}
-        <div className="flex flex-col gap-5 ">
-          {/* Full Name */}
-          <div className="flex flex-col gap-2">
-            <label className="text-bv-fog text-[0.65rem] tracking-[0.3em] uppercase">
-              Full Name
-            </label>
-            <input
-              type="text"
-              name="fullName"
-              placeholder="As it appears on official records"
-              value={formData.fullName}
-              onChange={handleChange}
-              className="bg-bv-vault border border-bv-dust text-bv-ash text-sm px-4 py-3 outline-none focus:border-bv-gold transition-colors duration-300 placeholder:text-bv-fog"
-            />
-          </div>
-
-          {/* Email */}
-          <div className="flex flex-col gap-2">
-            <label className="text-bv-fog text-[0.65rem] tracking-[0.3em] uppercase">
-              Email
-            </label>
-            <input
-              type="email"
-              name="email"
-              placeholder="Secure channel only"
-              value={formData.email}
-              onChange={handleChange}
-              className="bg-bv-vault border border-bv-dust text-bv-ash text-sm px-4 py-3 outline-none focus:border-bv-gold transition-colors duration-300 placeholder:text-bv-fog"
-            />
-          </div>
-
-          {/* Password */}
-          <div className="flex flex-col gap-2">
-            <label className="text-bv-fog text-[0.65rem] tracking-[0.3em] uppercase">
-              Password
-            </label>
-            <div className="relative">
-              <input
-                type={showPassword ? 'text' : 'password'}
-                name="password"
-                placeholder="Minimum 8 characters"
-                value={formData.password}
-                onChange={handleChange}
-                className="w-full bg-bv-vault border border-bv-dust text-bv-ash text-sm px-4 py-3 outline-none focus:border-bv-gold transition-colors duration-300 placeholder:text-bv-fog"
-              />
-              <span
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-bv-fog hover:text-bv-ash transition-colors duration-300"
-              >
-                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-              </span>
-            </div>
-          </div>
-        </div>
-        {/* Error */}
-        {error && (
-          <p className="text-bv-blood text-[0.65rem] tracking-[0.2em] text-center">
-            {error}
+        {!checking && !signupsOpen ? (
+          <p className="text-bv-fog text-xs tracking-wide text-center">
+            Clearance requests are currently closed. Check back later.
           </p>
-        )}
-        {/* Submit */}
-        <button
-          onClick={handleSubmit}
-          disabled={loading}
-          className="w-full border border-bv-blood text-bv-ash text-xs tracking-[0.4em] uppercase py-3 hover:bg-bv-blood/10 transition-colors duration-300 flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
-        >
-          {loading ? (
-            <>
-              <Loader size={14} className="animate-spin" />
-              Verifying...
-            </>
-          ) : 'Submit for Clearance'}
-        </button>
-        {/* Redirect */}
-        <p className="text-center text-bv-fog text-xs">
-          Already have clearance?{' '}
-          <span
-            onClick={() => navigate('/signin')}
-            className="text-bv-gold cursor-pointer hover:underline"
+        ) : (
+          <button
+            onClick={handleDiscordLogin}
+            disabled={checking}
+            className="w-full border border-bv-blood text-bv-ash text-xs tracking-[0.4em] uppercase py-4 hover:bg-bv-blood/10 transition-colors duration-300 cursor-pointer flex items-center justify-center gap-3 disabled:opacity-40"
           >
-            Sign In
-          </span>
-        </p>
+            <svg width="18" height="18" viewBox="0 0 127.14 96.36" fill="currentColor">
+              <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,84.69,65.69Z" />
+            </svg>
+            Continue with Discord
+          </button>
+        )}
       </motion.div>
     </div>
   )
