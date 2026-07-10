@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom'
+import { Analytics } from '@vercel/analytics/react'
 import Entrance from './pages/Entrance'
 import SignUp from './pages/SignUp'
 import SignIn from './pages/SignIn'
@@ -15,22 +16,24 @@ import SeasonTwoWaitlist from './pages/SeasonTwoWaitlist'
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Entrance />} />
-      <Route path="/signup" element={<SignUp />} />
-      <Route path="/signin" element={<SignIn />} />
-      <Route path="/role" element={<RoleReveal />} />
-      <Route path="/briefing" element={<Briefing />} />
-      <Route path="/meridian" element={<Meridian />} />
-      <Route path="/waitlist-s2" element={<SeasonTwoWaitlist />} />
+    <>
+      <Routes>
+        <Route path="/" element={<Entrance />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/signin" element={<SignIn />} />
+        <Route path="/role" element={<RoleReveal />} />
+        <Route path="/briefing" element={<Briefing />} />
+        <Route path="/meridian" element={<Meridian />} />
+        <Route path="/waitlist-s2" element={<SeasonTwoWaitlist />} />
 
-      {/* Archive with Protected Route */}
-      <Route path="/archive" element={<ProtectedRoute><Archive /></ProtectedRoute>} />
-      {/* admin */}
-      <Route path="/custodian-login" element={<CustodianLogin />} />
-      <Route path="/custodian" element={<CustodianRoute><Custodian /></CustodianRoute>} />
-    </Routes >
-
+        {/* Archive with Protected Route */}
+        <Route path="/archive" element={<ProtectedRoute><Archive /></ProtectedRoute>} />
+        {/* admin */}
+        <Route path="/custodian-login" element={<CustodianLogin />} />
+        <Route path="/custodian" element={<CustodianRoute><Custodian /></CustodianRoute>} />
+      </Routes>
+      <Analytics />
+    </>
   )
 }
 
