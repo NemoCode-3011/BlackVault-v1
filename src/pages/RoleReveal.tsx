@@ -74,7 +74,6 @@ export default function RoleReveal() {
 
     const newCodename = generateCodename()
     const newRole = assignRole()
-
     const { error } = await supabase
       .from('profiles')
       .update({ codename: newCodename, role: newRole, rank: 'Recruit' })
@@ -82,7 +81,11 @@ export default function RoleReveal() {
 
     if (error) {
       console.error('Failed to save profile:', error)
+      return
     }
+
+    // User has successfully completed onboarding
+    localStorage.setItem('bv_returning', 'true')
 
     setCodename(newCodename)
     setRole(newRole)
