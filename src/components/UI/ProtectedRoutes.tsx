@@ -5,7 +5,6 @@ import { supabase } from '../../lib/supabase'
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const [status, setStatus] = useState<'checking' | 'ok' | 'no-session' | 'maintenance'>('checking')
-
   useEffect(() => {
     async function check() {
       const { data: { session } } = await supabase.auth.getSession()
@@ -22,7 +21,6 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
 
       setStatus(data?.maintenance_mode ? 'maintenance' : 'ok')
     }
-
     check()
     const interval = setInterval(check, 15000)
     return () => clearInterval(interval)
@@ -39,6 +37,5 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
       </div>
     )
   }
-
   return <>{children}</>
 }
