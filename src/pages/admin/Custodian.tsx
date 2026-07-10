@@ -837,20 +837,26 @@ function SettingsPanel() {
   }, [])
 
   const toggle = async (key: keyof typeof settings) => {
-    const newValue = !settings[key]
-    setSettings({ ...settings, [key]: newValue })
+  const newValue = !settings[key]
+  console.log('Toggling', key, 'to', newValue)
+  setSettings({ ...settings, [key]: newValue })
 
-    const column = key === 'maintenanceMode' ? 'maintenance_mode' : 'new_signups'
-    const { error } = await supabase
-      .from('app_settings')
-      .update({ [column]: newValue })
-      .eq('id', 1)
+  const column = key === 'maintenanceMode' ? 'maintenance_mode' : 'new_signups'
+  console.log('Writing column', column, 'value', newValue)
 
-    if (error) {
-      console.error('Failed to save setting:', error)
-      setSettings({ ...settings, [key]: !newValue })
-    }
+  const { data, error } = await supabase
+    .from('app_settings')
+    .update({ [column]: newValue })
+    .eq('id', 1)
+    .select()
+
+  console.log('Supabase response — data:', data, 'error:', error)
+
+  if (error) {
+    console.error('Failed to save setting:', error)
+    setSettings({ ...settings, [key]: !newValue })
   }
+}
 
   if (loading) {
     return <p className="text-bv-fog text-xs tracking-[0.3em] uppercase">Loading settings...</p>
