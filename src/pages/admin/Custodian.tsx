@@ -838,11 +838,12 @@ function SettingsPanel() {
 
   const toggle = async (key: keyof typeof settings) => {
   const newValue = !settings[key]
-  console.log('Toggling', key, 'to', newValue)
   setSettings({ ...settings, [key]: newValue })
 
   const column = key === 'maintenanceMode' ? 'maintenance_mode' : 'new_signups'
-  console.log('Writing column', column, 'value', newValue)
+
+  const { data: { session } } = await supabase.auth.getSession()
+  console.log('Current session user id:', session?.user?.id)
 
   const { data, error } = await supabase
     .from('app_settings')
