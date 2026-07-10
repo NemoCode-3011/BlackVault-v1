@@ -11,6 +11,7 @@ import ProtectedRoute from './components/UI/ProtectedRoutes'
 import CustodianLogin from './pages/admin/CustodianLogin'
 import CustodianRoute from './components/UI/CustodianRoutes'
 import SeasonTwoWaitlist from './pages/SeasonTwoWaitlist'
+import { Analytics } from "@vercel/analytics/react"
 
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
       <Route path="/briefing" element={<Briefing />} />
       <Route path="/meridian" element={<Meridian />} />
       <Route path="/waitlist-s2" element={<SeasonTwoWaitlist />} />
+      <Analytics />
 
       {/* Archive with Protected Route */}
       <Route path="/archive" element={<ProtectedRoute><Archive /></ProtectedRoute>} />
@@ -30,6 +32,7 @@ function App() {
       <Route path="/custodian-login" element={<CustodianLogin />} />
       <Route path="/custodian" element={<CustodianRoute><Custodian /></CustodianRoute>} />
     </Routes >
+
 
   )
 }
