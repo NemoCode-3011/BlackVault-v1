@@ -4,6 +4,7 @@ import { Navigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  
   const [status, setStatus] = useState<'checking' | 'ok' | 'no-session' | 'maintenance'>('checking')
   useEffect(() => {
     async function check() {
@@ -18,7 +19,7 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
         .select('maintenance_mode')
         .eq('id', 1)
         .single()
-
+        console.log('ProtectedRoute read maintenance_mode:', data, 'raw:', JSON.stringify(data))
       setStatus(data?.maintenance_mode ? 'maintenance' : 'ok')
     }
     check()
@@ -37,5 +38,6 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
       </div>
     )
   }
+  
   return <>{children}</>
 }
