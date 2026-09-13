@@ -3,7 +3,7 @@ import { LayoutDashboard, FolderLock, Mail, Users, Settings, ChevronLeft, Chevro
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
 import { motion } from 'framer-motion'
 import { Trash2 } from 'lucide-react';
-import bvLogo from '../../assets/bv-logo.png'
+import bvLogo from '/src/public/assets/bv-logo.png'
 import { supabase } from '../../lib/supabase'
 import { useNavigate } from 'react-router-dom'
 import { signOut } from '../../lib/auth'
@@ -337,6 +337,10 @@ function OverviewPanel() {
   )
 }
 
+// NOTE: the "Initiate File" button below is disabled and `creating` can
+// never become true, so the form JSX further down is currently dead code.
+// Left in place intentionally so it's ready to reconnect once Files reads
+// from and writes to a real Supabase table instead of local state.
 function FilesPanel() {
   const [files, setFiles] = useState<typeof emptyFile[]>([])
   const [creating, setCreating] = useState(false)
@@ -365,11 +369,15 @@ function FilesPanel() {
           </h2>
         </div>
         <button
-          onClick={() => setCreating(!creating)}
-          className="border border-bv-blood text-bv-ash text-[0.7rem] tracking-[0.3em] uppercase px-5 py-2.5 hover:bg-bv-blood/10 transition-colors duration-200 cursor-pointer" style={{ fontFamily: 'var(--font-display)' }}>
-          {creating ? 'Cancel' : '+ Initiate File'}
+          disabled
+          title="Content authoring isn't wired to a real table yet — this is a placeholder until the multi-game content model ships."
+          className="border border-bv-dust text-bv-fog text-[0.7rem] tracking-[0.3em] uppercase px-5 py-2.5 opacity-50 cursor-not-allowed" style={{ fontFamily: 'var(--font-display)' }}>
+          Coming soon — Initiate File
         </button>
       </div>
+      <p className="text-bv-fog text-[0.65rem] tracking-[0.2em] uppercase -mt-4">
+        Authoring isn't connected to the live archive yet. New files still require a code change and deploy.
+      </p>
 
       {/* Create form */}
       {creating && (

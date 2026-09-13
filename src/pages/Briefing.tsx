@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import operativePhoto from "../assets/Ok.png"
+import operativePhoto from "/src/public/assets/Ok.png"
 
 export default function Briefing() {
   const navigate = useNavigate()

@@ -2,7 +2,7 @@ import { useState} from 'react'
 import { motion } from 'framer-motion'
 import { Loader } from 'lucide-react'
 import { supabase } from '../lib/supabase'
-import bvStamp from '../assets/blackvault-stamp.png'
+import bvStamp from '/src/public/assets/blackvault-stamp.png'
 
 export default function SeasonTwoWaitlist() {
   const [email, setEmail] = useState('')

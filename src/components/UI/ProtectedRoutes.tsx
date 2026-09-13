@@ -19,7 +19,6 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
         .select('maintenance_mode')
         .eq('id', 1)
         .single()
-        console.log('ProtectedRoute read maintenance_mode:', data, 'raw:', JSON.stringify(data))
       setStatus(data?.maintenance_mode ? 'maintenance' : 'ok')
     }
     check()

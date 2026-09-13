@@ -1,26 +1,35 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { gsap } from 'gsap'
-import bvStamp from '../assets/blackvault-stamp.png'
-import bvLogo from '../assets/bv-logo.png'
-import unknownWoman from '../assets/unknown-woman.jpg'
+import bvStamp from '/src/public/assets/blackvault-stamp.png'
+import bvLogo from '/src/public/assets/bv-logo.png'
+import unknownWoman from '/src/public/assets/unknown-woman.jpg'
 import { supabase } from '../lib/supabase'
 import { useNavigate, Link } from 'react-router-dom'
 import { signOut } from '../lib/auth'
 
 // --- AnswerInput ---
-function AnswerInput({ answer, onUnlock }: { answer: string; onUnlock: () => void }) {
+// The correct answer is never sent to the client. `verify_answer` is a
+// Postgres function (security definer) that hashes `guess` and compares it
+// against a stored hash in `puzzle_answers` — see supabase/verify_answer.sql.
+function AnswerInput({ fileId, onUnlock }: { fileId: string; onUnlock: () => void }) {
   const [input, setInput] = useState('')
-  const [status, setStatus] = useState<'idle' | 'correct' | 'wrong'>('idle')
+  const [status, setStatus] = useState<'idle' | 'correct' | 'wrong' | 'checking'>('idle')
 
-  const handleSubmit = () => {
-    if (input.trim().toUpperCase() === answer.toUpperCase()) {
-      setStatus('correct')
-      onUnlock()
-    } else {
+  const handleSubmit = async () => {
+    if (!input.trim() || status === 'checking') return
+    setStatus('checking')
+    const { data, error } = await supabase.rpc('verify_answer', {
+      p_file_id: fileId,
+      p_guess: input,
+    })
+    if (error || !data) {
       setStatus('wrong')
       setTimeout(() => setStatus('idle'), 2000)
+      return
     }
+    setStatus('correct')
+    onUnlock()
   }
 
   return status === 'correct' ? (
@@ -67,14 +76,16 @@ function AnswerInput({ answer, onUnlock }: { answer: string; onUnlock: () => voi
 function Document004({ onUnlock }: { onUnlock: (id: string) => void }) {
   const [stage, setStage] = useState(0)
   const [input, setInput] = useState('')
-  const [status, setStatus] = useState<'idle' | 'correct' | 'wrong'>('idle')
+  const [status, setStatus] = useState<'idle' | 'correct' | 'wrong' | 'checking'>('idle')
   const [finished, setFinished] = useState(false)
   const [revealStage, setRevealStage] = useState(0)
 
+  // Answers live server-side under file ids '004-1', '004-2', '004-3' in
+  // the puzzle_answers table — only the clue text stays in the client.
   const stages = [
-    { clue: "File metadata intact. Coordinates embedded in filename per standard Kavala Station field protocol.", answer: 'BRUSSELS' },
-    { clue: "See also: MI-1978-KVL cross-reference noted in transit record. Supporting material exists outside this archive.", answer: 'VANTAGE' },
-    { clue: "Decryption key derivation: subject designation combined with participation classification. See Form HF-7.", answer: 'STARLINGWASCHOSEN' },
+    { id: '004-1', clue: "File metadata intact. Coordinates embedded in filename per standard Kavala Station field protocol." },
+    { id: '004-2', clue: "See also: MI-1978-KVL cross-reference noted in transit record. Supporting material exists outside this archive." },
+    { id: '004-3', clue: "Decryption key derivation: subject designation combined with participation classification. See Form HF-7." },
   ]
 
   const currentStage = stages[stage]
@@ -86,22 +97,28 @@ function Document004({ onUnlock }: { onUnlock: (id: string) => void }) {
     return () => { clearTimeout(t1); clearTimeout(t2) }
   }, [finished])
 
-  const handleSubmit = () => {
-    if (input.trim().toUpperCase() === currentStage.answer.toUpperCase()) {
-      setStatus('correct')
-      setTimeout(() => {
-        if (stage === stages.length - 1) {
-          setFinished(true)
-        } else {
-          setStage(prev => prev + 1)
-          setInput('')
-          setStatus('idle')
-        }
-      }, 1200)
-    } else {
+  const handleSubmit = async () => {
+    if (!input.trim() || status === 'checking') return
+    setStatus('checking')
+    const { data, error } = await supabase.rpc('verify_answer', {
+      p_file_id: currentStage.id,
+      p_guess: input,
+    })
+    if (error || !data) {
       setStatus('wrong')
       setTimeout(() => setStatus('idle'), 2000)
+      return
     }
+    setStatus('correct')
+    setTimeout(() => {
+      if (stage === stages.length - 1) {
+        setFinished(true)
+      } else {
+        setStage(prev => prev + 1)
+        setInput('')
+        setStatus('idle')
+      }
+    }, 1200)
   }
 
   return (
@@ -526,7 +543,7 @@ function FileViewer({
                 <p style={{ color: '#2A2520', fontSize: '0.75rem', lineHeight: '1.8', fontFamily: 'var(--font-body)' }}>
                   Classification code per Form HF-7. Key filed with the transit record.
                 </p>
-                <AnswerInput answer="WILLING" onUnlock={() => onUnlock('002')} />
+                <AnswerInput fileId="001" onUnlock={() => onUnlock('002')} />
               </div>
             </div>
           )}
@@ -659,7 +676,7 @@ function FileViewer({
                   Cross-reference against original station manifest recommended. Verification attached.
                 </p>
                 {isUnlocked('002') ? (
-                  <AnswerInput answer="PARISH" onUnlock={() => onUnlock('003')} />
+                  <AnswerInput fileId="002" onUnlock={() => onUnlock('003')} />
                 ) : (
                   <p style={{ color: '#8A8070', fontSize: '0.65rem', letterSpacing: '0.1em', fontFamily: 'var(--font-body)', fontStyle: 'italic' }}>
                     Submission locked. Document 001 must be resolved first.
@@ -779,7 +796,7 @@ function FileViewer({
                 <p style={{ color: '#2A2520', fontSize: '0.75rem', lineHeight: '1.8', fontFamily: 'var(--font-body)' }}>
                   Three accounts filed separately. Discrepancies noted but not reconciled at time of recovery. Bird names are reserved for protected sources — not subjects, not case numbers.
                 </p>
-                <AnswerInput answer="CORMORANT" onUnlock={() => onUnlock('004')} />
+                <AnswerInput fileId="003" onUnlock={() => onUnlock('004')} />
               </div>
             </div>
           )}
