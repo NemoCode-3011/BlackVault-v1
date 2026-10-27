@@ -1,73 +1,94 @@
-# React + TypeScript + Vite
+# BlackVault
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An interactive, security-themed narrative experience built around a fictional organisation. The frontend combines staged story progression with Supabase authentication and database-backed checks for member and custodian areas.
 
-Currently, two official plugins are available:
+> **Status:** Frontend project. Supabase authentication and table queries are implemented in the client, but a complete production deployment, database policies, and end-to-end access-control behaviour have not been independently verified.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features implemented
 
-## React Compiler
+- Multi-stage experience: entrance, signup/sign-in, role reveal, briefing, Meridian, and season waitlist
+- Email/password signup and sign-in through Supabase Auth
+- Google and Discord OAuth initiation
+- Email verification / OTP flow
+- Member route checks using the current Supabase session
+- Custodian route checks against `profiles.is_custodian`
+- Member-area maintenance-mode check against `app_settings.maintenance_mode`
+- Motion and sound design using Framer Motion, GSAP, and Howler
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Stack
 
-## Expanding the ESLint configuration
+- React, TypeScript, Vite
+- React Router
+- Supabase JS client
+- Tailwind CSS
+- Framer Motion, GSAP, Howler
+- Vercel Analytics
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Architecture
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```mermaid
+flowchart TD
+  Visitor[Visitor] --> UI[React routes and narrative pages]
+  UI --> Auth[Supabase Auth]
+  UI --> Profile[Supabase profiles table]
+  UI --> Settings[Supabase app_settings table]
+  Auth --> Session[Supabase session]
+  Session --> MemberGate[Member route check]
+  Session --> CustodianGate[Custodian role check]
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+The route guards improve the client experience, but they are not a substitute for Supabase Row Level Security (RLS) policies. Access-sensitive tables must enforce permissions on the server/database as well.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Run locally
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Requirements: Node.js and npm, plus a Supabase project.
+
+1. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+2. Create a local `.env` file:
+
+   ```dotenv
+   VITE_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
+   VITE_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
+   ```
+
+   These are browser-side Supabase project settings. Never put a Supabase service-role key or other server secret in a `VITE_*` variable.
+
+3. Configure the Supabase Auth providers and redirect URLs for the local origin (normally `http://localhost:5173`) and the deployed origin.
+
+4. Ensure the database has the tables and columns queried by the app, including `profiles.is_custodian` and `app_settings.maintenance_mode`, with appropriate RLS policies.
+
+5. Start the development server:
+
+   ```bash
+   npm run dev
+   ```
+
+## Available checks
+
+```bash
+npm run build
+npm run lint
+``
+
+There is no test script configured in `package.json` at present. Build and lint results have not been recorded in this README; run both commands against the current checkout before treating them as passing.
+
+## Screenshots
+
+Add screenshots captured from the running application here once the current build has been launched and the key routes have been checked. Do not use the decorative hero asset as a substitute for an application screenshot.
+
+## Important verification still needed
+
+- Confirm OAuth providers and redirect URLs in the Supabase dashboard.
+- Verify email OTP behaviour with the project's actual Auth settings.
+- Verify RLS policies for `profiles` and `app_settings`; client-side guards alone do not secure data.
+- Test member and custodian access with accounts of both roles.
+- Check mobile layout, reduced-motion behaviour, and audio handling.
+
+## Repository
+
+[Source code](https://github.com/NemoCode-3011/BlackVault-v1)
